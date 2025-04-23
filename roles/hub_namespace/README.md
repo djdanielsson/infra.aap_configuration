@@ -89,10 +89,10 @@ hub_namespaces:
       - name: "New_Google"
         url: "http://www.google.com"
     groups:
-      - name: system:partner-engineers
-        object_roles:
-          - "change_namespace"
-          - "upload_to_namespace"
+      # For groups that participate in an organization for example, system organization
+      - system::partner-engineers
+      # For groups without organizations
+      - team
 ```
 
 ## Playbook Examples
