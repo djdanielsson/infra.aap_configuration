@@ -1,140 +1,101 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create inventory sources on Ansible Controller.
+    short_description: An Ansible Role to create inventory_sources on Ansible gateway.
     options:
-      controller_inventory_sources:
+      aap_inventory_sources:
         description: Data structure describing your inventory_sources
         type: list
+        required: true
         elements: dict
-        # options:
-        #   name:
-        #     required: true
-        #     type: str
-        #     description: Name of inventory_source
-        #   new_name:
-        #     required: false
-        #     type: str
-        #     description: Name of inventory_source, used in updating
-        #   description:
-        #     required: false
-        #     type: str
-        #     description: Description to use for the inventory_source.
-        #   inventory:
-        #     required: true
-        #     type: str
-        #     description: Name of inventory the inventory_source should be made a member of.
-        #   organization:
-        #     required: false
-        #     type: str
-        #     description: Organization the inventory belongs to.
-        #   source:
-        #     required: false
-        #     type: str
-        #     choices:
-        #       - scm
-        #       - ec2
-        #       - gce
-        #       - azure_rm
-        #       - vmware
-        #       - satellite6
-        #       - openstack
-        #       - rhv
-        #       - controller
-        #       - insights
-        #     description: The source to use for this group.
-        #   source_path:
-        #     required: false
-        #     type: str
-        #     description: For an SCM based inventory source, the source path points to the file within the repo to use as an inventory.
-        #   source_vars:
-        #     required: false
-        #     type: dict
-        #     description: The variables or environment fields to apply to this source type.
-        #   enabled_var:
-        #     required: false
-        #     type: str
-        #     description: The variable to use to determine enabled state e.g., "status.power_state".
-        #   enabled_value:
-        #     required: false
-        #     type: str
-        #     description: Value when the host is considered enabled, e.g., "powered_on".
-        #   host_filter:
-        #     required: false
-        #     type: str
-        #     description: If specified, controller will only import hosts that match this regular expression.
-        #   credential:
-        #     required: false
-        #     type: str
-        #     description: Credential to use for the source.
-        #   execution_environment:
-        #     required: false
-        #     type: str
-        #     description: Execution Environment to use for the source.
-        #   overwrite:
-        #     required: false
-        #     type: bool
-        #     description: Delete child groups and hosts not found in source.
-        #   overwrite_vars:
-        #     required: false
-        #     type: bool
-        #     description: Override vars in child groups and hosts with those from external source.
-        #   custom_virtualenv:
-        #     required: false
-        #     type: str
-        #     description: Local absolute file path containing a custom Python virtualenv to use.
-        #   timeout:
-        #     required: false
-        #     type: int
-        #     description: The amount of time (in seconds) to run before the task is canceled.
-        #   verbosity:
-        #     required: false
-        #     type: int
-        #     choices:
-        #       - 0
-        #       - 1
-        #       - 2
-        #     description: The verbosity level to run this inventory source under.
-        #   update_on_launch:
-        #     required: false
-        #     type: bool
-        #     description: Refresh inventory data from its source each time a job is run.
-        #   update_cache_timeout:
-        #     required: false
-        #     type: bool
-        #     description: Time in seconds to consider an inventory sync to be current.
-        #   source_project:
-        #     required: false
-        #     type: str
-        #     description: Project to use as source with scm option
-        #   notification_templates_started:
-        #     required: false
-        #     type: bool
-        #     description: The notifications on started to use for this inventory source in a list.
-        #   notification_templates_success:
-        #     required: false
-        #     type: str
-        #     description: The notifications on success to use for this inventory source in a list.
-        #   notification_templates_error:
-        #     required: false
-        #     type: str
-        #     description: The notifications on error to use for this inventory source in a list.
-        #   wait:
-        #     required: false
-        #     type: bool
-        #     description: Unused for this role
-        #   interval:
-        #     required: false
-        #     type: int
-        #     description: Unused for this role
-        #   state:
-        #     default: "{{ controller_state | default('present') }}"
-        #     required: false
-        #     type: str
-        #     description: Desired state of the resource.
+        options:
+          credential:
+            type: str
+            description: ['Credential name, ID, or named URL to use for the source.']
+          custom_virtualenv:
+            type: str
+            description: ['Local absolute file path containing a custom Python virtualenv to use.', 'Only compatible with older versions of AWX/Controller', 'Deprecated, will be removed in the future']
+          description:
+            type: str
+            description: ['The description to use for the inventory source.']
+          enabled_value:
+            type: str
+            description: ['Value when the host is considered enabled, e.g., "powered_on"']
+          enabled_var:
+            type: str
+            description: ['The variable to use to determine enabled state e.g., "status.power_state"']
+          execution_environment:
+            type: str
+            description: ['Execution Environment name, ID, or named URL to use for the source.']
+          host_filter:
+            type: str
+            description: ['If specified, AWX will only import hosts that match this regular expression.']
+          inventory:
+            required: True
+            type: str
+            description: ['Inventory name, ID, or named URL the group should be made a member of.']
+          limit:
+            type: str
+            description: ['Enter host, group or pattern match']
+          name:
+            required: True
+            type: str
+            description: ['The name to use for the inventory source.']
+          new_name:
+            type: str
+            description: ['A new name for this assets (will rename the asset)']
+          notification_templates_error:
+            type: list
+            description: ['list of notifications to send on error']
+          notification_templates_started:
+            type: list
+            description: ['list of notifications to send on start']
+          notification_templates_success:
+            type: list
+            description: ['list of notifications to send on success']
+          organization:
+            type: str
+            description: ["Name of the inventory source's inventory's organization."]
+          overwrite:
+            type: bool
+            description: ['Delete child groups and hosts not found in source.']
+          overwrite_vars:
+            type: bool
+            description: ['Override vars in child groups and hosts with those from external source.']
+          scm_branch:
+            type: str
+            description: ['Inventory source SCM branch.', 'Project must have branch override enabled.']
+          source:
+            type: str
+            description: ['The source to use for this group.']
+          source_path:
+            type: str
+            description: ['For an SCM based inventory source, the source path points to the file within the repo to use as an inventory.']
+          source_project:
+            type: str
+            description: ['Project name, ID, or named URL to use as source with scm option']
+          source_vars:
+            type: dict
+            description: ['The variables or environment fields to apply to this source type.']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.']
+          timeout:
+            type: int
+            description: The amount of time (in seconds) to run before the task is canceled.
+          update_cache_timeout:
+            type: int
+            description: ['Time in seconds to consider an inventory sync to be current.']
+          update_on_launch:
+            type: bool
+            description: ['Refresh inventory data from its source each time a job is run.']
+          verbosity:
+            type: int
+            description: The verbosity level to run this inventory source under.
 
       # Async variables
-      controller_configuration_inventory_sources_async_retries:
+      inventory_sources_async_retries:
         default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
@@ -142,7 +103,7 @@ argument_specs:
         default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      controller_configuration_inventory_sources_async_delay:
+      inventory_sources_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -156,7 +117,7 @@ argument_specs:
         description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      controller_configuration_inventory_sources_secure_logging:
+      gateway_inventory_sources_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
@@ -176,26 +137,26 @@ argument_specs:
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
       aap_token:
         default: None
         required: false
-        description: Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

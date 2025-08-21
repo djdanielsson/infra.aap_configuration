@@ -1,28 +1,18 @@
 ---
-
-# These are the default variables common to most ah_configuration roles
+# These are the default variables common to most gateway_configuration roles
 # You shouldn't need to define them again and again but they should be defined
-# ah_username: "{{ inventory_hostname }}"
-# ah_oauthtoken: ""
+# aap_hostname: "{{ inventory_hostname }}"
+# gateway_token: ""
 # aap_validate_certs: false
 
-# These are the default variables specific to the collection role
-hub_collections: []
-# possible fields:
-# - namespace
-# - name
-# - version
-# - path
-# - wait
-# - auto_approve
-# - overwrite_existing
-# - state
+# These are the default variables specific to the license role
 
-hub_configuration_collection_secure_logging: "{{ aap_configuration_secure_logging | default(false) }}"
-hub_configuration_collection_async_timeout: "{{ aap_configuration_async_timeout | default(1000) }}"
-hub_configuration_collection_async_retries: "{{ aap_configuration_async_retries | default(50) }}"
-hub_configuration_collection_async_delay: "{{ aap_configuration_async_delay | default(1) }}"
-hub_configuration_collection_loop_delay: "{{ aap_configuration_loop_delay | default(0) }}"
+# a list of dictionaries describing the gateway collection
+gateway_collection: []
+gateway_collection_secure_logging: "{{ aap_configuration_secure_logging | default('false') }}"
+gateway_collection_async_retries: "{{ aap_configuration_async_retries | default(30) }}"
+gateway_collection_async_delay: "{{ aap_configuration_async_delay | default(1) }}"
+gateway_collection_enforce_defaults: "{{ aap_configuration_enforce_defaults | default(false) }}"
+gateway_collection_loop_delay: "{{ aap_configuration_loop_delay | default(0) }}"
 aap_configuration_async_dir:
-aap_configuration_collect_logs: false
 ...

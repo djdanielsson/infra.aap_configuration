@@ -1,25 +1,56 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create execution environment repositories in Automation Hub.
+    short_description: An Ansible Role to create ee_repository on Ansible gateway.
     options:
-      hub_ee_repositories:
-        default: []
-        required: false
-        description: Data structure describing your ee repositories to manage.
+      aap_ee_repository:
+        description: Data structure describing your ee_repository
         type: list
+        required: true
         elements: dict
+        options:
+          description:
+            type: str
+            description: ['Text that describes the repository.']
+          exclude_tags:
+            default: []
+            type: list
+            description: ['The tags to avoid pulling in.']
+          include_tags:
+            default: []
+            type: list
+            description: ['The tags to pull in.']
+          name:
+            required: True
+            type: str
+            description: ['Name of the repository to remove or modify.']
+          readme:
+            type: str
+            description: ['README text in Markdown format for the repository.', 'Mutually exclusive with the O(readme_file) option.']
+          readme_file:
+            type: path
+            description: ['Path to a README file in Markdown format to associate with the repository.', 'Mutually exclusive with the O(readme) option.']
+          registry:
+            type: str
+            description: ['The remote registry that the repository belongs in.']
+          state:
+            default: present
+            type: str
+            description: ['If V(absent), then the module deletes the repository.', 'The module does not fail if the repository does not exist because the state is already as expected.', 'If V(present), then the module sets the description and README file for the repository.']
+          upstream_name:
+            type: str
+            description: ['The name of the image upstream.']
 
       # Async variables
-      hub_configuration_ee_repository_async_retries:
-        default: "{{ aap_configuration_async_retries | default(50) }}"
+      ee_repository_async_retries:
+        default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
       aap_configuration_async_retries:
-        default: 50
+        default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      hub_configuration_ee_repository_async_delay:
+      ee_repository_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -30,14 +61,14 @@ argument_specs:
       aap_configuration_async_dir:
         default:
         required: false
-        description: Sets the directory to write the results file for async tasks. The default value is set to  `null` which uses the Ansible Default of `/root/.ansible_async/`.
+        description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      hub_configuration_ee_repository_secure_logging:
+      gateway_ee_repository_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
-        description: Whether or not to include the sensitive role tasks in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
+        description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
       aap_configuration_secure_logging:
         default: false
         required: false
@@ -45,32 +76,34 @@ argument_specs:
         description: This variable enables secure logging across all roles as a default.
 
       # Generic across all roles
+      platform_state:
+        default: present
+        required: false
+        description: The state all objects will take unless overridden by object default
+        type: str
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
-      hub_path_prefix:
-        required: false
-        description: The path for the Automation Hub API. Usually galaxy or automation-hub unless custom set in AH settings.
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
-      aap_request_timeout:
-        default: 10
-        required: false
-        description: Specify the timeout Ansible should use in requests to the Ansible Automation Platform Server.
-        type: float
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Controller Admin User's password on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at vars/controller-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        type: str
+      aap_token:
+        default: None
+        required: false
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

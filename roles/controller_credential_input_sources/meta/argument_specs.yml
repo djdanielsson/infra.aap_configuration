@@ -1,41 +1,39 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create Credential Input Sources on Ansible Controller.
+    short_description: An Ansible Role to create credential_input_sources on Ansible gateway.
     options:
-      controller_credential_input_sources:
+      aap_credential_input_sources:
         description: Data structure describing your credential_input_sources
         type: list
+        required: true
         elements: dict
-        # options:
-        #   target_credential:
-        #     required: true
-        #     type: str
-        #     description: Name of credential to have the input source applied
-        #   input_field_name:
-        #     required: true
-        #     type: str
-        #     description: Name of field which will be written by the input source
-        #   source_credential:
-        #     required: false
-        #     type: str
-        #     description: Name of the source credential which points to a credential source
-        #   metadata:
-        #     required: false
-        #     type: dict
-        #     description: The metadata applied to the source.
-        #   description:
-        #     required: false
-        #     type: str
-        #     description: Description to use for the credential input source.
-        #   state:
-        #     default: "{{ controller_state | default('present') }}"
-        #     required: false
-        #     type: str
-        #     description: Desired state of the resource.
+        options:
+          description:
+            type: str
+            description: ['The description to use for the credential input source.']
+          input_field_name:
+            required: True
+            type: str
+            description: ['The input field the credential source will be used for']
+          metadata:
+            required: False
+            type: dict
+            description: ['A JSON or YAML string']
+          source_credential:
+            type: str
+            description: ['The credential name, ID, or named URL which is the source of the credential lookup']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.']
+          target_credential:
+            required: True
+            type: str
+            description: ['The credential name, ID, or named URL which will have its input defined by this source']
 
       # Async variables
-      controller_configuration_credential_input_sources_async_retries:
+      credential_input_sources_async_retries:
         default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
@@ -43,7 +41,7 @@ argument_specs:
         default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      controller_configuration_credential_input_sources_async_delay:
+      credential_input_sources_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -57,7 +55,7 @@ argument_specs:
         description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      controller_configuration_credential_input_sources_secure_logging:
+      gateway_credential_input_sources_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
@@ -77,26 +75,26 @@ argument_specs:
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
       aap_token:
         default: None
         required: false
-        description: Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

@@ -1,25 +1,67 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to update, or destroy Automation Hub Collections.
+    short_description: An Ansible Role to create collection on Ansible gateway.
     options:
-      hub_collections:
-        default: []
-        required: false
-        description: Data structure describing your collections to manage.
+      aap_collection:
+        description: Data structure describing your collection
         type: list
+        required: true
         elements: dict
+        options:
+          auto_approve:
+            default: True
+            type: bool
+            description: ['Approves a collection.', 'Requires version to be set.']
+          interval:
+            default: 10
+            required: False
+            type: float
+            description: ['The interval to request an update from Automation Hub when waiting for the approval.']
+          name:
+            required: True
+            type: str
+            description: ['Collection name.', 'Must be lower case containing only alphanumeric characters and underscores.']
+          namespace:
+            required: True
+            type: str
+            description: ['Namespace name.', 'Must be lower case containing only alphanumeric characters and underscores.']
+          overwrite_existing:
+            default: False
+            type: bool
+            description: ['Overwrites an existing collection.', 'Requires version to be set.']
+          path:
+            type: str
+            description: ['Collection artifact file path.', 'If version is not specified, version will be derived from the file name.']
+          repository:
+            default: staging
+            type: str
+            description: ['Name of the destination collection for the repository (staging for uploads).']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.', 'If present with a path, will upload a collection artifact to Automation hub.', 'If present will return data on a collection.', 'If present with version, will return data on a collection version.', 'If absent without version, will delete the collection and all versions.', 'If absent with version, will delete only specified version.']
+          timeout:
+            type: int
+            description: ['Waiting for the approval will abort after this amount of seconds.']
+          version:
+            type: str
+            description: ['Collection Version.', 'Must be lower case containing only alphanumeric characters and underscores.']
+          wait:
+            default: True
+            type: bool
+            description: ['Waits for the collection to be uploaded.']
 
       # Async variables
-      hub_configuration_collection_async_retries:
-        default: "{{ aap_configuration_async_retries | default(50) }}"
+      collection_async_retries:
+        default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
       aap_configuration_async_retries:
-        default: 50
+        default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      hub_configuration_collection_async_delay:
+      collection_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -30,14 +72,14 @@ argument_specs:
       aap_configuration_async_dir:
         default:
         required: false
-        description: Sets the directory to write the results file for async tasks. The default value is set to  `null` which uses the Ansible Default of `/root/.ansible_async/`.
+        description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      hub_configuration_collection_secure_logging:
+      gateway_collection_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
-        description: Whether or not to include the sensitive role tasks in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
+        description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
       aap_configuration_secure_logging:
         default: false
         required: false
@@ -45,37 +87,34 @@ argument_specs:
         description: This variable enables secure logging across all roles as a default.
 
       # Generic across all roles
+      platform_state:
+        default: present
+        required: false
+        description: The state all objects will take unless overridden by object default
+        type: str
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
-      hub_path_prefix:
-        required: false
-        description: The path for the Automation Hub API. Usually galaxy or automation-hub unless custom set in AH settings.
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
-      aap_request_timeout:
-        default: 10
-        required: false
-        description: Specify the timeout Ansible should use in requests to the Ansible Automation Platform Server.
-        type: float
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Controller Admin User's password on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at vars/controller-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
-      hub_token:
+      aap_token:
         default: None
         required: false
-        description: Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: gateway_services
-  author: Martin Slemr
-  description: An Ansible Role to create service API routes in automation platform gateway.
+  author: Auto Generated
+  description: An Ansible Role to create services in Ansible gateway.
   company: Red Hat
 
   # If the issue tracker for your role is not on github, uncomment the

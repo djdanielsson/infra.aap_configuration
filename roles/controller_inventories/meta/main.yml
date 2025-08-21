@@ -1,11 +1,14 @@
 ---
 galaxy_info:
-  role_name: inventories
-  author: Andrew J. Huffman, Kedar Kulkarni
-  description: An Ansible role to create inventories and inventory sources in Ansible Controller.
+  role_name: gateway_inventories
+  author: Auto Generated
+  description: An Ansible Role to create inventories in Ansible gateway.
   company: Red Hat
 
-  license: GPL-3.0-or-later
+  # If the issue tracker for your role is not on github, uncomment the
+  # next line and provide a value
+  # issue_tracker_url: http://example.com/issue/tracker
+  license: GPLv3
 
   min_ansible_version: 2.16.0
 
@@ -15,20 +18,12 @@ galaxy_info:
         - all
 
   galaxy_tags:
-    - controller
+    - gateway
     - aap
-    - awx
     - configuration
     - inventory
     - inventories
-    - source
-
-collections:
-  - ansible.controller
 
 dependencies:
-  # List your role dependencies here, one per line. Be sure to remove the '[]' above,
-  # if you add dependencies to this list.
   - role: global_vars
-  - role: meta_dependency_check
 ...

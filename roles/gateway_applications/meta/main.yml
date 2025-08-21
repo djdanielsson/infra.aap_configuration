@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   role_name: gateway_applications
-  author: John Westcott IV
+  author: Auto Generated
   description: An Ansible Role to create applications in Ansible gateway.
   company: Red Hat
 

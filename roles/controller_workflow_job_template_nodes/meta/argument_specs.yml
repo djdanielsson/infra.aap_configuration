@@ -1,0 +1,162 @@
+---
+argument_specs:
+  main:
+    short_description: An Ansible Role to create workflow_job_template_nodes on Ansible gateway.
+    options:
+      aap_workflow_job_template_nodes:
+        description: Data structure describing your workflow_job_template_nodes
+        type: list
+        required: true
+        elements: dict
+        options:
+          all_parents_must_converge:
+            type: bool
+            description: ['If enabled then the node will only run if all of the parent nodes have met the criteria to reach this node']
+          always_nodes:
+            type: list
+            description: ['Nodes that will run after this node completes.', 'List of node identifiers.']
+          approval_node:
+            type: dict
+            description: ['A dictionary of Name, description, and timeout values for the approval node.', 'This parameter is mutually exclusive with C(unified_job_template).']
+          credentials:
+            type: list
+            description: ['Credential names, IDs, or named URLs to be applied to job as launch-time prompts.', 'List of credential names, IDs, or named URLs.', 'Uniqueness is not handled rigorously.']
+          diff_mode:
+            type: bool
+            description: ['Run diff mode, applied as a prompt, if job template prompts for diff mode']
+          execution_environment:
+            type: str
+            description: ['Execution Environment name, ID, or named URL applied as a prompt, assuming job template prompts for execution environment']
+          extra_data:
+            type: dict
+            description: ['Variables to apply at launch time.', 'Will only be accepted if job template prompts for vars or has a survey asking for those vars.']
+          failure_nodes:
+            type: list
+            description: ['Nodes that will run after this node on failure.', 'List of node identifiers.']
+          forks:
+            type: int
+            description: ['Forks applied as a prompt, assuming job template prompts for forks']
+          identifier:
+            required: True
+            type: str
+            description: ['An identifier for this node that is unique within its workflow.', 'It is copied to workflow job nodes corresponding to this node.']
+          instance_groups:
+            type: list
+            description: ['List of Instance Group names, IDs, or named URLs applied as a prompt, assuming job template prompts for instance groups']
+          inventory:
+            type: str
+            description: ['Name, ID, or named URL of the Inventory applied as a prompt, if job template prompts for inventory']
+          job_slice_count:
+            type: int
+            description: ['Job Slice Count applied as a prompt, assuming job template prompts for job slice count']
+          job_tags:
+            type: str
+            description: ['Job tags applied as a prompt, if job template prompts for job tags']
+          job_type:
+            type: str
+            description: ['Job type applied as a prompt, if job template prompts for job type']
+          labels:
+            type: list
+            description: ['List of labels applied as a prompt, assuming job template prompts for labels']
+          limit:
+            type: str
+            description: ['Limit to act on, applied as a prompt, if job template prompts for limit']
+          lookup_organization:
+            type: str
+            description: ['Organization name, ID, or named URL the inventories, job template, project, inventory source the unified_job_template exists in.', 'If not provided, will lookup by name only, which does not work with duplicates.']
+          organization:
+            type: str
+            description: ['The organization name, ID, or named URL of the workflow job template the node exists in.', 'Used for looking up the workflow, not a direct model field.']
+          scm_branch:
+            type: str
+            description: ['SCM branch applied as a prompt, if job template prompts for SCM branch']
+          skip_tags:
+            type: str
+            description: ['Tags to skip, applied as a prompt, if job tempalte prompts for job tags']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.']
+          success_nodes:
+            type: list
+            description: ['Nodes that will run after this node on success.', 'List of node identifiers.']
+          timeout:
+            type: int
+            description: ['Timeout applied as a prompt, assuming job template prompts for timeout']
+          unified_job_template:
+            type: str
+            description: ['Name of unified job template to run in the workflow.', 'Can be a job template, project, inventory source, etc.', 'Omit if creating an approval node.', 'This parameter is mutually exclusive with C(approval_node).']
+          verbosity:
+            type: str
+            description: ['Verbosity applied as a prompt, if job template prompts for verbosity']
+          workflow_job_template:
+            required: True
+            type: str
+            description: ['The workflow job template name, ID, or named URL the node exists in.', 'Used for looking up the node, cannot be modified after creation.']
+
+      # Async variables
+      workflow_job_template_nodes_async_retries:
+        default: "{{ aap_configuration_async_retries | default(30) }}"
+        required: false
+        description: This variable sets the number of retries to attempt for the role.
+      aap_configuration_async_retries:
+        default: 30
+        required: false
+        description: This variable sets number of retries across all roles as a default.
+      workflow_job_template_nodes_async_delay:
+        default: "{{ aap_configuration_async_delay | default(1) }}"
+        required: false
+        description: This variable sets delay between retries for the role.
+      aap_configuration_async_delay:
+        default: 1
+        required: false
+        description: This variable sets delay between retries across all roles as a default.
+      aap_configuration_async_dir:
+        default:
+        required: false
+        description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
+
+      # No_log variables
+      gateway_workflow_job_template_nodes_secure_logging:
+        default: "{{ aap_configuration_secure_logging | default(false) }}"
+        required: false
+        type: bool
+        description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
+      aap_configuration_secure_logging:
+        default: false
+        required: false
+        type: bool
+        description: This variable enables secure logging across all roles as a default.
+
+      # Generic across all roles
+      platform_state:
+        default: present
+        required: false
+        description: The state all objects will take unless overridden by object default
+        type: str
+      aap_hostname:
+        default: None
+        required: false
+        description: URL to the Ansible gateway Server.
+        type: str
+      aap_validate_certs:
+        default: true
+        required: false
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
+        type: str
+      aap_username:
+        default: None
+        required: false
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
+        type: str
+      aap_password:
+        default: None
+        required: false
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        type: str
+      aap_token:
+        default: None
+        required: false
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        type: str
+...

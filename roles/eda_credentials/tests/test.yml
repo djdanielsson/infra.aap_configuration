@@ -1,20 +1,20 @@
 ---
-- name: Add credential to EDA Controller
+- name: Add credentials Input Sources on gateway
   hosts: localhost
   connection: local
   gather_facts: false
   vars:
-    eda_validate_certs: false
-  # Define following vars here, or in eda_configs/eda_auth.yml
-  # controller_host: ansible-eda-web-svc-test-project.example.com
-  # eda_token: changeme
+    aap_validate_certs: false
+    aap_hostname: gateway.example.com
+    aap_username: admin
+    aap_password: changeme
+
   pre_tasks:
-    - name: Include vars from eda_configs directory
+    - name: Include vars from gateway_configs directory
       ansible.builtin.include_vars:
-        dir: ./vars
+        dir: ./configs
         extensions: [yml]
-      tags:
-        - always
+
   roles:
-    - infra.aap_configuration.eda_credentials
+    - { role: gateway_credentials, when: gateway_credentials is defined }
 ...

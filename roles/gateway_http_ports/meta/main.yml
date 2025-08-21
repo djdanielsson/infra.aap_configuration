@@ -1,8 +1,8 @@
 ---
 galaxy_info:
   role_name: gateway_http_ports
-  author: Martin Slemr
-  description: An Ansible Role to define http ports in automation platform gateway.
+  author: Auto Generated
+  description: An Ansible Role to create http_ports in Ansible gateway.
   company: Red Hat
 
   # If the issue tracker for your role is not on github, uncomment the
@@ -21,8 +21,8 @@ galaxy_info:
     - gateway
     - aap
     - configuration
-    - httpport
-    - httpports
+    - http_port
+    - http_ports
 
 dependencies:
   - role: global_vars

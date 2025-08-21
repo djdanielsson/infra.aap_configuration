@@ -1,43 +1,104 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create rulebook activations in EDA controller.
+    short_description: An Ansible Role to create rulebook_activations on Ansible gateway.
     options:
-      eda_rulebook_activations:
-        default: []
-        required: false
-        description: Data structure describing your rulebook activations to manage.
+      aap_rulebook_activations:
+        description: Data structure describing your rulebook_activations
         type: list
+        required: true
         elements: dict
+        options:
+          awx_token_name:
+            type: str
+            description: ['The token ID of the AWX controller.']
+          decision_environment_name:
+            type: str
+            description: ['The name of the decision environment associated with the rulebook activation.', 'Required when state is present.']
+          description:
+            type: str
+            description: ['The description of the rulebook activation.']
+          eda_credentials:
+            type: list
+            description: ['A list of IDs for EDA credentials used by the rulebook activation.', 'This parameter is supported in AAP 2.5 and onwards. If specified for AAP 2.4, value will be ignored.']
+          enabled:
+            default: True
+            type: bool
+            description: ['Whether the rulebook activation is enabled or not.', 'This field will be removed in version 3.0.0.', 'The logic of controlling the state of an activation is going to be controlled by the C(state) parameter itself.']
+          event_streams:
+            type: list
+            description: ['A list of event stream names that this rulebook activation listens to.', 'This parameter is supported in AAP 2.5 and onwards. If specified for AAP 2.4, value will be ignored.']
+          extra_vars:
+            type: str
+            description: ['The extra variables for the rulebook activation.']
+          k8s_service_name:
+            type: str
+            description: ['The name of the Kubernetes service associated with this rulebook activation.', 'This parameter is supported in AAP 2.5 and onwards. If specified for AAP 2.4, value will be ignored.']
+          log_level:
+            default: error
+            type: str
+            description: ['Allow setting the desired log level.', 'This parameter is supported in AAP 2.5 and onwards. If specified for AAP 2.4, value will be ignored.']
+          name:
+            required: True
+            type: str
+            description: ['The name of the rulebook activation.']
+          new_name:
+            type: str
+            description: ['Renames an existing rulebook activation.', 'If set, the rulebook activation will be updated with the new name.']
+          organization_name:
+            type: str
+            description: ['The name of the organization. Required when state is present.', 'This parameter is supported in AAP 2.5 and onwards. If specified for AAP 2.4, value will be ignored.']
+          project_name:
+            type: str
+            description: ['The name of the project associated with the rulebook activation.', 'Required when state is present.']
+          restart:
+            default: False
+            type: bool
+            description: ['Performs a restart of the activation. This is a non idempotent operation.', 'If enabled the rest of parameters will be ignored.']
+          restart_policy:
+            default: on-failure
+            type: str
+            description: ['The restart policy for the rulebook activation.']
+          rulebook_name:
+            type: str
+            description: ['The name of the rulebook associated with the rulebook activation.', 'Required when state is present.']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.', 'The state of an activation itself is controlled by this parameter, whether I(enabled) or I(disabled).', 'When an activation is created, it is I(enabled) by default. Thus, I(present) is equivalent to I(enabled).', "Whether I(present), I(enabled), or I(disabled) is specified, an activation will be created if it doesn't exist already.", 'To create a disabled activation, specify C(state) as I(disabled).', 'Essentially, this parameter deprecates the usage of C(enabled).']
+          swap_single_source:
+            default: True
+            type: bool
+            description: ['Allow swapping of single sources in a rulebook without name match.', 'This parameter is no longer used and is going to be ignored.', 'This field will be removed in version 3.0.0.']
 
       # Async variables
-      eda_configuration_rulebook_activations_async_retries:
-        default: "{{ aap_configuration_async_retries | default(50) }}"
+      rulebook_activations_async_retries:
+        default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
       aap_configuration_async_retries:
-        default: 50
+        default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      eda_configuration_rulebook_activations_async_delay:
-        default: "{{ aap_configuration_async_delay| default(1) }}"
+      rulebook_activations_async_delay:
+        default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
-      eda_configuration_async_delay:
+      aap_configuration_async_delay:
         default: 1
         required: false
         description: This variable sets delay between retries across all roles as a default.
       aap_configuration_async_dir:
         default:
         required: false
-        description: Sets the directory to write the results file for async tasks. The default value is set to  `null` which uses the Ansible Default of `/root/.ansible_async/`.
+        description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      eda_configuration_rulebook_activations_secure_logging:
+      gateway_rulebook_activations_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
-        description: Whether or not to include the sensitive role tasks in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
+        description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
       aap_configuration_secure_logging:
         default: false
         required: false
@@ -53,26 +114,26 @@ argument_specs:
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
       aap_token:
         default: None
         required: false
-        description: Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

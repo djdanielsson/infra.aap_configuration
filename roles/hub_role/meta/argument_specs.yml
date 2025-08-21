@@ -1,25 +1,39 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create role permissions in Automation Hub.
+    short_description: An Ansible Role to create role on Ansible gateway.
     options:
-      hub_roles:
-        default: []
-        required: false
-        description: Data structure describing your role permissions to manage.
+      aap_role:
+        description: Data structure describing your role
         type: list
+        required: true
         elements: dict
+        options:
+          description:
+            type: str
+            description: ['Description to use for the role.']
+          name:
+            required: True
+            type: str
+            description: ['Name of the role.', "Must start with 'galaxy.'."]
+          perms:
+            type: list
+            description: ['The list of permissions to add to or remove from the given group.', 'The module accepts the following roles.', 'For user management, V(add_user), V(change_user), V(delete_user), and V(view_user).', 'For group management, V(add_group), V(change_group), V(delete_group), and V(view_group).', 'For collection namespace management, V(add_namespace), V(change_namespace), V(upload_to_namespace), and V(delete_namespace).', 'For collection content management, V(modify_ansible_repo_content), V(delete_collection), and V(sign_ansiblerepository).', 'For remote repository configuration, V(change_collectionremote), V(view_collectionremote), V(add_collectionremote), V(delete_collectionremote), and V(manage_roles_collectionremote).', 'For Ansible Repository management, only with private automation hub v4.7.0 V(add_ansiblerepository), V(change_ansiblerepository), V(delete_ansiblerepository), V(manage_roles_ansiblerepository), V(repair_ansiblerepository), V(view_ansiblerepository),', 'For container image management, only with private automation hub v4.3.2 or later, V(change_containernamespace_perms), V(change_container), V(change_image_tag), V(create_container), Push existing container V(push_container), V(namespace_add_containerdistribution), V(manage_roles_containernamespace), and V(delete_containerrepository).', 'For remote registry management, V(add_containerregistryremote), V(change_containerregistryremote), and V(delete_containerregistryremote).', 'For task management, V(change_task), V(view_task), and V(delete_task).', 'You can also grant or revoke all permissions with V(*) or V(all).']
+          state:
+            default: present
+            type: str
+            description: ['If V(absent), then the module removes the listed permissions from the group. If the group has permissions that are not listed in O(perms), then the module does not remove those pre-existing permissions.', 'If V(present), then the module adds the listed permissions to the group. The module does not remove the permissions that the group already has.']
 
       # Async variables
-      hub_configuration_role_async_retries:
-        default: "{{ aap_configuration_async_retries | default(50) }}"
+      role_async_retries:
+        default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
       aap_configuration_async_retries:
-        default: 50
+        default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      hub_configuration_role_async_delay:
+      role_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -30,14 +44,14 @@ argument_specs:
       aap_configuration_async_dir:
         default:
         required: false
-        description: Sets the directory to write the results file for async tasks. The default value is set to  `null` which uses the Ansible Default of `/root/.ansible_async/`.
+        description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      hub_configuration_role_secure_logging:
+      gateway_role_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
-        description: Whether or not to include the sensitive role tasks in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
+        description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
       aap_configuration_secure_logging:
         default: false
         required: false
@@ -45,32 +59,34 @@ argument_specs:
         description: This variable enables secure logging across all roles as a default.
 
       # Generic across all roles
+      platform_state:
+        default: present
+        required: false
+        description: The state all objects will take unless overridden by object default
+        type: str
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
-      hub_path_prefix:
-        required: false
-        description: The path for the Automation Hub API. Usually galaxy or automation-hub unless custom set in AH settings.
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
-      aap_request_timeout:
-        default: 10
-        required: false
-        description: Specify the timeout Ansible should use in requests to the Ansible Automation Platform Server.
-        type: float
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Controller Admin User's password on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at vars/controller-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        type: str
+      aap_token:
+        default: None
+        required: false
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

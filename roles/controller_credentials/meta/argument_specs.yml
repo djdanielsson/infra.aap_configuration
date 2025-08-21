@@ -1,62 +1,55 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create credentials on Ansible Controller.
+    short_description: An Ansible Role to create credentials on Ansible gateway.
     options:
-      controller_credentials:
+      aap_credentials:
         description: Data structure describing your credentials
         type: list
+        required: true
         elements: dict
-        # options:
-        #   name:
-        #     type: str
-        #     required: true
-        #     description: Name of Credential
-        #   description:
-        #     type: str
-        #     required: false
-        #     description: The description of the credential to give more detail about it.
-        #   new_name:
-        #     type: str
-        #     required: false
-        #     description: Setting this option will change the existing name (looked up via the name field).
-        #   copy_from:
-        #     type: str
-        #     required: false
-        #     description: Name or id to copy the credential from. This will copy an existing credential and change any parameters supplied.
-        #   organization:
-        #     type: str
-        #     required: false
-        #     description: Organization this Credential belongs to. If provided on creation, do not give either user or team.
-        #   credential_type:
-        #     type: str
-        #     required: false
-        #     description: Name of credential type. See below for list of options. More information in Ansible controller documentation.
-        #   inputs:
-        #     type: dict
-        #     required: false
-        #     description: Credential inputs where the keys are var names used in templating. Refer to the Ansible controller documentation for example syntax. Individual examples can be found at /api/v2/credential_types/ on an controller.
-        #   user:
-        #     type: str
-        #     required: false
-        #     description: User that should own this credential. If provided, do not give either team or organization.
-        #   team:
-        #     type: str
-        #     required: false
-        #     description: Team that should own this credential. If provided, do not give either user or organization.
-        #   update_secrets:
-        #     default: true
-        #     type: bool
-        #     required: false
-        #     description: true will always change password if user specifies password, even if API gives $encrypted$ for password. false will only set the password if other values change too.
-        #   state:
-        #     default: "{{ controller_state | default('present') }}"
-        #     type: str
-        #     required: false
-        #     description: Desired state of the resource.
+        options:
+          copy_from:
+            type: str
+            description: ['Name or id to copy the credential from.', 'This will copy an existing credential and change any parameters supplied.', 'The new credential name will be the one provided in the name parameter.', 'The organization parameter is not used in this, to facilitate copy from one organization to another.', 'Provide the id or use the lookup plugin to provide the id if multiple credentials share the same name.']
+          credential_type:
+            required: True
+            type: str
+            description: ['The credential type being created.', 'Can be a built-in credential type such as "Machine", or a custom credential type such as "My Credential Type"', 'Choices include Amazon Web Services, Ansible Galaxy/Automation Hub API Token, Centrify Vault Credential Provider Lookup, Container Registry, CyberArk Central Credential Provider Lookup, CyberArk Conjur Secret Lookup, Google Compute Engine, GitHub Personal Access Token, GitLab Personal Access Token, GPG Public Key, HashiCorp Vault Secret Lookup, HashiCorp Vault Signed SSH, Insights, Machine, Microsoft Azure Key Vault, Microsoft Azure Resource Manager, Network, OpenShift or Kubernetes API Bearer Token, OpenStack, Red Hat Ansible Automation Platform, Red Hat Satellite 6, Red Hat Virtualization, Source Control, Thycotic DevOps Secrets Vault, Thycotic Secret Server, Vault, VMware vCenter, or a custom credential type']
+          description:
+            type: str
+            description: ['The description to use for the credential.']
+          inputs:
+            type: dict
+            description: ['Credential inputs where the keys are var names used in templating. Refer to the Automation Platform Controller documentation for example syntax.', 'authorize (use this for net type)', 'authorize_password (password for net credentials that require authorize)', 'client (client or application ID for azure_rm type)', 'security_token (STS token for aws type)', 'secret (secret token for azure_rm type)', 'tenant (tenant ID for azure_rm type)', 'subscription (subscription ID for azure_rm type)', 'domain (domain for openstack type)', 'become_method (become method to use for privilege escalation; some examples are "None", "sudo", "su", "pbrun")', 'become_username (become username; use "ASK" and launch job to be prompted)', 'become_password (become password; use "ASK" and launch job to be prompted)', 'vault_password (the vault password; use "ASK" and launch job to be prompted)', 'project (project that should use this credential for GCP)', 'host (the host for this credential)', 'username (the username for this credential; ``access_key`` for AWS)', 'password (the password for this credential; ``secret_key`` for AWS, ``api_key`` for RAX)', 'ssh_key_data (SSH private key content; to extract the content from a file path, use the lookup function (see examples))', 'vault_id (the vault identifier; this parameter is only valid if C(kind) is specified as C(vault).)', 'ssh_key_unlock (unlock password for ssh_key; use "ASK" and launch job to be prompted)', 'gpg_public_key (GPG Public Key used for signature validation)', 'client_id (client ID insights type service account)', 'client_secret (client secret insights type service account)']
+          name:
+            required: True
+            type: str
+            description: ['The name to use for the credential.']
+          new_name:
+            required: False
+            type: str
+            description: ['Setting this option will change the existing name (looked up via the name field.']
+          organization:
+            type: str
+            description: ['Organization name, ID, or named URL that should own the credential.', 'This parameter is mutually exclusive with C(team) and C(user).']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource. C(exists) will not modify the resource if it is present.']
+          team:
+            type: str
+            description: ['Team name, ID, or named URL that should own this credential.', 'This parameter is mutually exclusive with C(organization) and C(user).']
+          update_secrets:
+            default: True
+            type: bool
+            description: ['C(true) will always update encrypted values.', 'C(false) will only update encrypted values if a change is absolutely known to be needed.']
+          user:
+            type: str
+            description: ['User name, ID, or named URL that should own this credential.', 'This parameter is mutually exclusive with C(organization) and C(team).']
 
       # Async variables
-      controller_configuration_credentials_async_retries:
+      credentials_async_retries:
         default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
@@ -64,7 +57,7 @@ argument_specs:
         default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      controller_configuration_credentials_async_delay:
+      credentials_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -78,13 +71,13 @@ argument_specs:
         description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      controller_configuration_credentials_secure_logging:
-        default: "{{ aap_configuration_secure_logging | default(true) }}"
+      gateway_credentials_secure_logging:
+        default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
         description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
       aap_configuration_secure_logging:
-        default: true
+        default: false
         required: false
         type: bool
         description: This variable enables secure logging across all roles as a default.
@@ -98,26 +91,26 @@ argument_specs:
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
       aap_token:
         default: None
         required: false
-        description: Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...

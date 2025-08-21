@@ -1,0 +1,108 @@
+---
+argument_specs:
+  main:
+    short_description: An Ansible Role to create authenticator_users on Ansible gateway.
+    options:
+      aap_authenticator_users:
+        description: Data structure describing your authenticator_users
+        type: list
+        required: true
+        elements: dict
+        options:
+          authenticator:
+            required: True
+            type: str
+            description: ['The primary key of the authenticator to move the user to. The value of this primary key can be retrieved from the `authenticator_users` API endpoint.']
+          authenticator_user_id:
+            required: True
+            type: str
+            description: ['The authenticator user id of the user for which you want to update authenticators.']
+          keep_memberships:
+            default: False
+            type: bool
+            description: ["Decides if the RBAC memberships should be retained or dropped and let the authenticator map for the new authenticator manage it instead. If set to false it will remove the user's existing memberships and let the authenticator map for the new authenticator manage it instead."]
+          merge_accounts_with_same_uid:
+            default: False
+            type: bool
+            description: ['Automatically merge accounts with the same uid. Mutually exclusive with merge_with_user option.']
+          merge_with_user:
+            type: str
+            description: ['The user id of another user that you want to merge with the current user.']
+          new_uid:
+            type: str
+            description: ["The new UID for the user, used to link the users login with their local AAP account. Should match the user identifier from the new authentication provider. For example, if a user being moved to a new GitHub authenticator, the new UID should be the user's GitHub login ID."]
+          remove_other_authenticators:
+            default: False
+            type: bool
+            description: ['If true, delete any other authenticator_user entries the user has with other authenticators.']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.', 'Present state  C(present) will check if the authenticator user exists with the expected authenticator value and configure it if needed. If the authenticator user does not exist, it will be created.', 'Exists state  C(exists) will check if the item exists, and the related authenticator is correct. If not, the task will fail.']
+
+      # Async variables
+      authenticator_users_async_retries:
+        default: "{{ aap_configuration_async_retries | default(30) }}"
+        required: false
+        description: This variable sets the number of retries to attempt for the role.
+      aap_configuration_async_retries:
+        default: 30
+        required: false
+        description: This variable sets number of retries across all roles as a default.
+      authenticator_users_async_delay:
+        default: "{{ aap_configuration_async_delay | default(1) }}"
+        required: false
+        description: This variable sets delay between retries for the role.
+      aap_configuration_async_delay:
+        default: 1
+        required: false
+        description: This variable sets delay between retries across all roles as a default.
+      aap_configuration_async_dir:
+        default:
+        required: false
+        description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
+
+      # No_log variables
+      gateway_authenticator_users_secure_logging:
+        default: "{{ aap_configuration_secure_logging | default(false) }}"
+        required: false
+        type: bool
+        description: Whether or not to include the sensitive tasks from this role in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.
+      aap_configuration_secure_logging:
+        default: false
+        required: false
+        type: bool
+        description: This variable enables secure logging across all roles as a default.
+
+      # Generic across all roles
+      platform_state:
+        default: present
+        required: false
+        description: The state all objects will take unless overridden by object default
+        type: str
+      aap_hostname:
+        default: None
+        required: false
+        description: URL to the Ansible gateway Server.
+        type: str
+      aap_validate_certs:
+        default: true
+        required: false
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
+        type: str
+      aap_username:
+        default: None
+        required: false
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
+        type: str
+      aap_password:
+        default: None
+        required: false
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        type: str
+      aap_token:
+        default: None
+        required: false
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        type: str
+...

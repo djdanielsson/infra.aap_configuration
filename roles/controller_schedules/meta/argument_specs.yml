@@ -1,122 +1,105 @@
 ---
 argument_specs:
   main:
-    short_description: An Ansible Role to create schedules on Ansible Controller.
+    short_description: An Ansible Role to create schedules on Ansible gateway.
     options:
-      controller_schedules:
+      aap_schedules:
         description: Data structure describing your schedules
         type: list
+        required: true
         elements: dict
-        # options:
-        #   name:
-        #     required: true
-        #     type: str
-        #     description: Name of schedule
-        #   new_name:
-        #     type: str
-        #     required: false
-        #     description: Setting this option will change the existing name (looked up via the name field).
-        #   description:
-        #     required: false
-        #     type: str
-        #     description: Description to use for the schedule.
-        #   rrule:
-        #     required: true
-        #     type: str
-        #     description: A value representing the schedules iCal recurrence rule. See the awx.awx.schedule plugin for help constructing this value
-        #   extra_data:
-        #     required: false
-        #     type: dict
-        #     description: Extra vars for the job template. Only allowed if prompt on launch
-        #   inventory:
-        #     required: false
-        #     type: str
-        #     description: Inventory applied to job template, assuming the job template prompts for an inventory.
-        #   credentials:
-        #     required: false
-        #     type: list
-        #     description: List of credentials applied as a prompt, assuming job template prompts for credentials
-        #   scm_branch:
-        #     default: <Project default>
-        #     required: false
-        #     type: str
-        #     description: Branch to use in the job run. Project default used if not set. Only allowed if `allow_override` set to true on project
-        #   execution_environment:
-        #     required: false
-        #     type: str
-        #     description: Execution Environment applied as a prompt. <Job Template default> used if not set. Only allowed if `ask_execution_environment_on_launch` set to true on Job Template
-        #   forks:
-        #     required: false
-        #     type: str
-        #     description: Forks applied as a prompt. <Job Template default> used if not set. Only allowed if `ask_forks_on_launch` set to true on Job Template
-        #   instance_groups:
-        #     required: false
-        #     type: str
-        #     description:  List of Instance Groups applied as a prompt. <Job Template default> used if not set. Only allowed if `ask_instance_groups_on_launch` set to true on Job Template
-        #   job_slice_count:
-        #     required: false
-        #     type: str
-        #     description: Job Slice Count to use in the job run. <Job Template default> used if not set. Only allowed if `ask_job_slice_count_on_launch` set to true on Job Template
-        #   labels:
-        #     required: false
-        #     type: list
-        #     description: List of labels to use in the job run. <Job Template default> used if not set. Only allowed if `ask_labels_on_launch` set to true on Job Template
-        #   timeout:
-        #     required: false
-        #     type: str
-        #     description: Timeout to use in the job run. <Job Template default> used if not set. Only allowed if `ask_timeout_on_launch` set to true on Job Template
-        #   job_type:
-        #     required: false
-        #     type: str
-        #     description: The job type used for the job template.
-        #   job_tags:
-        #     required: false
-        #     type: str
-        #     description: Comma separated list of tags to apply to the job
-        #   skip_tags:
-        #     required: false
-        #     type: str
-        #     description: Comma separated list of tags to skip for the job
-        #   limit:
-        #     required: false
-        #     type: str
-        #     description: A host pattern to constrain the list of hosts managed or affected by the playbook
-        #   diff_mode:
-        #     required: false
-        #     type: bool
-        #     description: Enable diff mode for the job template.
-        #   verbosity:
-        #     required: false
-        #     type: int
-        #     choices:
-        #       - 0
-        #       - 1
-        #       - 2
-        #       - 3
-        #       - 4
-        #       - 5
-        #     description: Level of verbosity for the job. Only allowed if configured to prompt on launch
-        #   unified_job_template:
-        #     required: false
-        #     type: str
-        #     description: The name of object that is being targeted by the schedule. Example objects include projects, inventory sources, and templates. Required if state='present.
-        #   organization:
-        #     required: false
-        #     type: str
-        #     description: The organization the unified job template exists in. Used for looking up the unified job template, not a direct model field.
-        #   enabled:
-        #     default: true
-        #     required: false
-        #     type: bool
-        #     description: Enabled processing of this job template
-        #   state:
-        #     default: "{{ controller_state | default('present') }}"
-        #     required: false
-        #     type: str
-        #     description: Desired state of the resource.
+        options:
+          credentials:
+            type: list
+            description: ['List of credential names, IDs, or named URLs applied as a prompt, assuming job template prompts for credentials']
+          description:
+            required: False
+            type: str
+            description: ['Optional description of this schedule.']
+          diff_mode:
+            required: False
+            type: bool
+            description: ['Enable diff mode for the job template.']
+          enabled:
+            required: False
+            type: bool
+            description: ['Enables processing of this schedule.']
+          execution_environment:
+            type: str
+            description: ['Execution Environment name, ID, or named URL applied as a prompt, assuming job template prompts for execution environment']
+          extra_data:
+            required: False
+            type: dict
+            description: ['Specify C(extra_vars) for the template.']
+          forks:
+            type: int
+            description: ['Forks applied as a prompt, assuming job template prompts for forks']
+          instance_groups:
+            type: list
+            description: ['List of Instance Group names, IDs, or named URLs applied as a prompt, assuming job template prompts for instance groups']
+          inventory:
+            required: False
+            type: str
+            description: ['Inventory name, ID, or named URL applied as a prompt, assuming job template prompts for inventory']
+          job_slice_count:
+            type: int
+            description: ['Job Slice Count applied as a prompt, assuming job template prompts for job slice count']
+          job_tags:
+            required: False
+            type: str
+            description: ['Comma separated list of the tags to use for the job template.']
+          job_type:
+            required: False
+            type: str
+            description: ['The job type to use for the job template.']
+          labels:
+            type: list
+            description: ['List of labels applied as a prompt, assuming job template prompts for labels']
+          limit:
+            required: False
+            type: str
+            description: ['A host pattern to further constrain the list of hosts managed or affected by the playbook']
+          name:
+            required: True
+            type: str
+            description: ['Name of this schedule.']
+          new_name:
+            required: False
+            type: str
+            description: ['Setting this option will change the existing name (looked up via the name field.']
+          organization:
+            type: str
+            description: ['The organization name, ID, or named URL the unified job template exists in.', 'Used for looking up the unified job template, not a direct model field.']
+          rrule:
+            required: False
+            type: str
+            description: ['A value representing the schedules iCal recurrence rule.', 'See rrule plugin for help constructing this value']
+          scm_branch:
+            required: False
+            type: str
+            description: ['Branch to use in job run. Project default used if blank. Only allowed if project allow_override field is set to true.']
+          skip_tags:
+            required: False
+            type: str
+            description: ['Comma separated list of the tags to skip for the job template.']
+          state:
+            default: present
+            type: str
+            description: ['Desired state of the resource.']
+          timeout:
+            type: int
+            description: ['Timeout applied as a prompt, assuming job template prompts for timeout']
+          unified_job_template:
+            required: False
+            type: str
+            description: ['Name, ID, or named URL of unified job template to schedule. Used to look up an already existing schedule.']
+          verbosity:
+            required: False
+            type: int
+            description: ['Control the output level Ansible produces as the playbook runs. 0 - Normal, 1 - Verbose, 2 - More Verbose, 3 - Debug, 4 - Connection Debug.']
 
       # Async variables
-      controller_configuration_schedules_async_retries:
+      schedules_async_retries:
         default: "{{ aap_configuration_async_retries | default(30) }}"
         required: false
         description: This variable sets the number of retries to attempt for the role.
@@ -124,7 +107,7 @@ argument_specs:
         default: 30
         required: false
         description: This variable sets number of retries across all roles as a default.
-      controller_configuration_schedules_async_delay:
+      schedules_async_delay:
         default: "{{ aap_configuration_async_delay | default(1) }}"
         required: false
         description: This variable sets delay between retries for the role.
@@ -138,7 +121,7 @@ argument_specs:
         description: Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.
 
       # No_log variables
-      controller_configuration_schedules_secure_logging:
+      gateway_schedules_secure_logging:
         default: "{{ aap_configuration_secure_logging | default(false) }}"
         required: false
         type: bool
@@ -158,26 +141,26 @@ argument_specs:
       aap_hostname:
         default: None
         required: false
-        description: URL to the Ansible Automation Platform Server.
+        description: URL to the Ansible gateway Server.
         type: str
       aap_validate_certs:
         default: true
         required: false
-        description: Whether or not to validate the Ansible Automation Platform Server's SSL certificate.
+        description: Whether or not to validate the Ansible gateway Server's SSL certificate.
         type: str
       aap_username:
         default: None
         required: false
-        description: Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.
+        description: Admin User on the Ansible gateway Server. Either username / password or oauthtoken need to be specified.
         type: str
       aap_password:
         default: None
         required: false
-        description: Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.
+        description: Gateway Admin User's password on the Ansible gateway Server. This should be stored in an Ansible Vault at vars/gateway-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
       aap_token:
         default: None
         required: false
-        description: Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
+        description: Gateway Admin User's token on the Ansible gateway Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.
         type: str
 ...
