@@ -1,4 +1,4 @@
 ---
 bugfixes:
-  - Fix accidentally removed usage of '*_async_delay' and '*_async_retries' variables
+  - Fix accidentally removed usage of '_async_delay' and '_async_retries' variables
 ...
