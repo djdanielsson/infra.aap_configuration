@@ -19,12 +19,12 @@ ansible-galaxy collection install -r tests/collections/requirements.yml to be in
 |`aap_password`|""|no|str|Controller Admin User's password on the Ansible Controller Server. This should be stored in an Ansible Vault at vars/controller-secrets.yml or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.||
 |`controller_oauthtoken`|""|no|str|Controller Admin User's token on the Ansible Controller Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.||
 |`controller_request_timeout`|`10`|no|int|Specify the timeout in seconds Ansible should use in requests to the Ansible Automation Platform host.||
+|`aap_configuration_collect_logs`|`false`|no|bool|Specify whether to collect async results and continue for all failed async tasks instead of failing on the first error. Collected results are available in the `aap_configuration_role_errors` variable.||
 |`controller_projects`|`see below`|yes|str|Data structure describing your project or projects Described below. Alias: projects ||
-|`aap_configuration_collect_logs`|`false`|no|bool|Specify whether it collects logs for all failed tasks related to project creation, modification, or deletion, instead of failing on the first error.||
 
 ### Enforcing defaults
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, enforcing default values is not done.
 Enabling these variables enforce default values on options that are optional in the controller API.
 This should be enabled to enforce configuration and prevent configuration drift. It is recommended to be enabled, however it is not enforced by default.
@@ -40,7 +40,7 @@ Enabling this will enforce configuration without specifying every option in the 
 
 ### Secure Logging Variables
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, secure logging defaults to false.
 The role defaults to false as normally the add projects task does not include sensitive information.
 controller_configuration_projects_secure_logging defaults to the value of aap_configuration_secure_logging if it is not explicitly called. This allows for secure logging to be toggled for the entire suite of configuration roles with a single variable, or for the user to selectively use it.

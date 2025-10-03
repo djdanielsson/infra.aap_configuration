@@ -19,6 +19,7 @@ ansible-galaxy collection install -r tests/collections/requirements.yml to be in
 |`aap_password`|""|no|Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.||
 |`aap_token`|""|no|Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.||
 |`aap_request_timeout`|`10`|no|Specify the timeout in seconds Ansible should use in requests to the Ansible Automation Platform host.||
+|`aap_configuration_collect_logs`|`false`|no|Specify whether to collect async results and continue for all failed async tasks instead of failing on the first error. Collected results are available in the `aap_configuration_role_errors` variable.||
 |`aap_organizations`|`see below`|yes|Data structure describing your organization or organizations Described below. Alias: organizations ||
 |`assign_galaxy_credentials_to_org`|`true`|no|Boolean to indicate whether credentials should be assigned or not. It should be noted that credentials must exist before adding it. The dispatch role will set this to `false`, before re-running the role with it set to `true`. ||
 |`assign_default_ee_to_org`|`true`|no|Boolean to indicate whether default execution environment should be assigned or not. It should be noted that execution environment must exist before adding it. The dispatch role will set this to `false`, before re-running the role with it set to `true`. ||
@@ -27,7 +28,7 @@ ansible-galaxy collection install -r tests/collections/requirements.yml to be in
 
 ### Enforcing defaults
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, enforcing default values is not done.
 Enabling these variables enforce default values on options that are optional in the controller API.
 This should be enabled to enforce configuration and prevent configuration drift. It is recommended to be enabled, however it is not enforced by default.
@@ -43,7 +44,7 @@ Enabling this will enforce configuration without specifying every option in the 
 
 ### Secure Logging Variables
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, secure logging defaults to false.
 The role defaults to false as normally the add organization task does not include sensitive information.
 controller_configuration_organizations_secure_logging defaults to the value of aap_configuration_secure_logging if it is not explicitly called. This allows for secure logging to be toggled for the entire suite of configuration roles with a single variable, or for the user to selectively use it.

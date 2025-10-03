@@ -4,6 +4,69 @@ infra.aap\_configuration Release Notes
 
 .. contents:: Topics
 
+v3.7.0
+======
+
+Minor Changes
+-------------
+
+- Set async log collection default once
+
+Bugfixes
+--------
+
+- fixing `controller_configuration_workflow_async_delay` to what it was supposed to be `controller_configuration_workflow_job_templates_async_delay`
+- fixing `controller_configuration_workflow_async_retries` to what it was supposed to be `controller_configuration_workflow_job_templates_async_retries`
+- fixing `controller_configuration_workflow_loop_delay` to what it was supposed to be `controller_configuration_workflow_job_templates_loop_delay`
+
+v3.6.0
+======
+
+Minor Changes
+-------------
+
+- added a sync option to collection_repository_sync role to allow more easily skipping of specific repositories
+
+Bugfixes
+--------
+
+- changing `workflow_job_templates_secure_logging` to fit standard `controller_configuration_workflow_job_templates_secure_logging`
+- fixing `workflow_job_templates_async_delay` to what it was supposed to be `controller_configuration_workflow_async_delay`
+- fixing `workflow_job_templates_async_retries` to what it was supposed to be controller_configuration_workflow_async_retries`
+
+v3.5.2
+======
+
+Bugfixes
+--------
+
+- fixing bug that got introduced in 3.5.1 causing no_log issues
+
+v3.5.1
+======
+
+Bugfixes
+--------
+
+- Fix accidentally removed usage of '_async_delay' and '_async_retries' variables
+- Fixes issue when adding workflow schemas where the job_id is not defined because a failure state has occurred
+
+v3.5.0
+======
+
+Minor Changes
+-------------
+
+- Add object_ids parameter to gateway_role_user_assignments role
+- Add the ability to collect error logs while configuring the object, instead of failing on the first error.
+- Fix variable name in dispatch role.
+- gateway_role_user_assignments - ansible.platform.role_user_assignment as of version 2.5.20250702 supports the objects_ids parameters and marks object_id as deprecated. pull request
+
+Bugfixes
+--------
+
+- Corrected README for controller_credentials, API URL reference was pointed to AAP 2.4 API not 2.5
+
 v3.4.1
 ======
 
@@ -652,7 +715,7 @@ Major Changes
 Minor Changes
 -------------
 
-- Fixed default filters to use true when neccessary and changed a few defaults to omit rather then a value or empty string.
+- Fixed default filters to use true when necessary and changed a few defaults to omit rather then a value or empty string.
 - updated various Readmes to fix typos and missing information.
 
 Breaking Changes / Porting Guide

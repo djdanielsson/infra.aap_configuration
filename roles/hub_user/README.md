@@ -13,14 +13,14 @@ An Ansible Role to create users in Automation Hub.
 |`aap_password`|""|no|Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.||
 |`aap_validate_certs`|`true`|no|Whether or not to validate the Ansible Automation Platform Server's SSL certificate.||
 |`aap_request_timeout`|`10`|no|Specify the timeout Ansible should use in requests to the Galaxy or Automation Hub host.||
+|`aap_configuration_collect_logs`|`false`|no|Specify whether to collect async results and continue for all failed async tasks instead of failing on the first error. Collected results are available in the `aap_configuration_role_errors` variable.||
 |`hub_path_prefix`|""|no|API path used to access the api. Either galaxy, automation-hub, or custom||
 |`aap_configuration_async_dir`|`null`|no|Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.||
 |`aap_user_accounts`|`see below`|yes|Data structure describing your execution environment images, described below.||
-|`aap_configuration_collect_logs`|`false`|no|Specify whether it collects logs for all failed tasks related to hub user creation, instead of failing on the first error.||
 
 ### Secure Logging Variables
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, secure logging defaults to false.
 The role defaults to false as normally the add user task does not include sensitive information.
 hub_configuration_user_secure_logging defaults to the value of aap_configuration_secure_logging if it is not explicitly called. This allows for secure logging to be toggled for the entire suite of automation hub configuration roles with a single variable, or for the user to selectively use it.

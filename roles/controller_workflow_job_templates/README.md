@@ -19,12 +19,12 @@ ansible-galaxy collection install -r tests/collections/requirements.yml to be in
 |`aap_password`|""|no|Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.||
 |`aap_token`|""|no|Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.||
 |`aap_request_timeout`|`10`|no|Specify the timeout in seconds Ansible should use in requests to the Ansible Automation Platform host.||
+|`aap_configuration_collect_logs`|`false`|no|Specify whether to collect async results and continue for all failed async tasks instead of failing on the first error. Collected results are available in the `aap_configuration_role_errors` variable.||
 |`controller_workflows`|`see below`|yes|Data structure describing your workflow job templates described below. Alias: workflow_job_templates ||
-|`aap_configuration_collect_logs`|`false`|no|Specify whether it collects logs for all failed tasks related to workflow job template creation, modification, or deletion, instead of failing on the first error.||
 
 ### Enforcing defaults
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, enforcing default values is not done.
 Enabling these variables enforce default values on options that are optional in the controller API.
 This should be enabled to enforce configuration and prevent configuration drift. It is recommended to be enabled, however it is not enforced by default.
@@ -40,14 +40,14 @@ Enabling this will enforce configuration without specifying every option in the 
 
 ### Secure Logging Variables
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, secure logging defaults to false.
 The role defaults to false as normally the add Workflow Job Templates task does not include sensitive information.
-workflow_job_templates_secure_logging defaults to the value of aap_configuration_secure_logging if it is not explicitly called. This allows for secure logging to be toggled for the entire suite of genie roles with a single variable, or for the user to selectively use it.
+controller_configuration_workflow_job_templates_secure_logging defaults to the value of aap_configuration_secure_logging if it is not explicitly called. This allows for secure logging to be toggled for the entire suite of genie roles with a single variable, or for the user to selectively use it.
 
 |Variable Name|Default Value|Required|Description|
 |:---:|:---:|:---:|:---:|
-|`workflow_job_templates_secure_logging`|`false`|no|Whether or not to include the sensitive Workflow Job Templates role tasks in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.|
+|`controller_configuration_workflow_job_templates_secure_logging`|`false`|no|Whether or not to include the sensitive Workflow Job Templates role tasks in the log. Set this value to `true` if you will be providing your sensitive values from elsewhere.|
 |`aap_configuration_secure_logging`|`false`|no|This variable enables secure logging as well, but is shared across multiple roles, see above.|
 
 ### Asynchronous Retry Variables
@@ -60,11 +60,11 @@ This also speeds up the overall role.
 |Variable Name|Default Value|Required|Description|
 |:---:|:---:|:---:|:---:|
 |`aap_configuration_async_retries`|30|no|This variable sets the number of retries to attempt for the role globally.|
-|`controller_configuration_workflow_async_retries`|`{{ aap_configuration_async_retries }}`|no|This variable sets the number of retries to attempt for the role.|
+|`controller_configuration_workflow_job_templates_async_retries`|`{{ aap_configuration_async_retries }}`|no|This variable sets the number of retries to attempt for the role.|
 |`aap_configuration_async_delay`|1|no|This sets the delay between retries for the role globally.|
-|`controller_configuration_workflow_async_delay`|`aap_configuration_async_delay`|no|This sets the delay between retries for the role.|
+|`controller_configuration_workflow_job_templates_async_delay`|`aap_configuration_async_delay`|no|This sets the delay between retries for the role.|
 |`aap_configuration_loop_delay`|0|no|This sets the pause between each item in the loop for the roles globally. To help when API is getting overloaded.|
-|`controller_configuration_workflow_loop_delay`|`aap_configuration_loop_delay`|no|This sets the pause between each item in the loop for the role. To help when API is getting overloaded.|
+|`controller_configuration_workflow_job_templates_loop_delay`|`aap_configuration_loop_delay`|no|This sets the pause between each item in the loop for the role. To help when API is getting overloaded.|
 |`aap_configuration_async_dir`|`null`|no|Sets the directory to write the results file for async tasks. The default value is set to `null` which uses the Ansible Default of `/root/.ansible_async/`.|
 
 ## Data Structure
@@ -278,24 +278,24 @@ controller_workflows:
           type: job_template
           organization:
             name: Default
-      notification_templates_started: []
-      notification_templates_success: []
-      notification_templates_error: []
-      notification_templates_approvals: []
-      survey_spec:
-        name: ''
-        description: ''
-        spec:
-          - question_name: Basic Name
-            question_description: Name
-            required: true
-            type: text
-            variable: basic_name
-            min: 0
-            max: 1024
-            default: ''
-            choices: ''
-            new_question: true
+    notification_templates_started: []
+    notification_templates_success: []
+    notification_templates_error: []
+    notification_templates_approvals: []
+    survey_spec:
+      name: ''
+      description: ''
+      spec:
+        - question_name: Basic Name
+          question_description: Name
+          required: true
+          type: text
+          variable: basic_name
+          min: 0
+          max: 1024
+          default: ''
+          choices: ''
+          new_question: true
 
 ```
 

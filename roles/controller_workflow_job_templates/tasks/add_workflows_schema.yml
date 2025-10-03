@@ -2,7 +2,7 @@
 - name: add_workflows_schema | Manage Controller Workflow Nodes Block
   vars:
     ansible_async_dir: "{{ aap_configuration_async_dir }}"
-  no_log: "{{ workflow_job_templates_secure_logging }}"
+  no_log: "{{ controller_configuration_workflow_job_templates_secure_logging }}"
   block:
     # Creating Workflow Node
     - name: add_workflows_schema | Create the Workflow Nodes
@@ -44,7 +44,7 @@
       loop_control:
         loop_var: __workflow_loop_node_item
         label: "{{ __workflow_loop_item.name }}/{{ __workflow_loop_node_item.identifier }}"
-        pause: "{{ controller_configuration_workflow_loop_delay }}"
+        pause: "{{ controller_configuration_workflow_job_templates_loop_delay }}"
       async: "{{ ansible_check_mode | ternary(0, 1000) }}"
       poll: 0
       register: __workflows_node_async
@@ -65,7 +65,9 @@
       loop_control:
         loop_var: __workflows_node_async_results_item
       vars:
-        cas_secure_logging: "{{ workflow_job_templates_secure_logging }}"
+        cas_secure_logging: "{{ controller_configuration_workflow_job_templates_secure_logging }}"
+        cas_async_delay: "{{ controller_configuration_workflow_job_templates_async_delay }}"
+        cas_async_retries: "{{ controller_configuration_workflow_job_templates_async_retries }}"
         cas_job_async_results_item: "{{ __workflows_node_async_results_item }}"
         cas_error_list_var_name: "controller_workflows_errors"
 
@@ -94,8 +96,7 @@
         label: "{{ __workflow_loop_node_item.identifier }}"
       # Execute only the nodes that define links to the following
       when: ((__workflow_loop_node_item.always_nodes is defined and __workflow_loop_node_item.always_nodes | length > 0) or (__workflow_loop_node_item.success_nodes is
-        defined and __workflow_loop_node_item.success_nodes | length > 0) or (__workflow_loop_node_item.failure_nodes is defined and __workflow_loop_node_item.failure_nodes
-        | length > 0))
+        defined and __workflow_loop_node_item.success_nodes | length > 0) or (__workflow_loop_node_item.failure_nodes is defined and __workflow_loop_node_item.failure_nodes | length > 0))
       async: "{{ ansible_check_mode | ternary(0, 1000) }}"
       poll: 0
       register: __workflows_link_async
@@ -118,12 +119,17 @@
       loop_control:
         loop_var: __workflows_link_async_results_item
       vars:
-        cas_secure_logging: "{{ workflow_job_templates_secure_logging }}"
+        cas_secure_logging: "{{ controller_configuration_workflow_job_templates_secure_logging }}"
+        cas_async_delay: "{{ controller_configuration_workflow_job_templates_async_delay }}"
+        cas_async_retries: "{{ controller_configuration_workflow_job_templates_async_retries }}"
         cas_job_async_results_item: "{{ __workflows_link_async_results_item }}"
         cas_error_list_var_name: "controller_workflows_errors"
 
   always:
     - name: add_workflows_schema | Cleanup async results files
+      when:
+        - not ansible_check_mode
+        - __workflows_schema_results_item.ansible_job_id is defined
       ansible.builtin.async_status:
         jid: "{{ __workflows_schema_results_item.ansible_job_id }}"
         mode: cleanup

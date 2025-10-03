@@ -15,19 +15,19 @@ An Ansible Role to create Credential Types in EDA Controller.
 |`aap_password`|""|no|Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.||
 |`aap_token`|""|no|Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.||
 |`aap_request_timeout`|`10`|no|Specify the timeout in seconds Ansible should use in requests to the controller host.||
+|`aap_configuration_collect_logs`|`false`|no|Specify whether to collect async results and continue for all failed async tasks instead of failing on the first error. Collected results are available in the `aap_configuration_role_errors` variable.||
 |`eda_credential_types`|`see below`|yes|Data structure describing your users Described below.||
-|`aap_configuration_collect_logs`|`false`|no|Specify whether it collects logs for all failed tasks related to credential types creation in EDA, instead of failing on the first error.||
 
 ### Secure Logging Variables
 
-The following Variables compliment each other.
+The following Variables complement each other.
 If Both variables are not set, secure logging defaults to false.
 The role defaults to false as normally the add group_roles task does not include sensitive information.
 eda_configuration_credential_types_secure_logging defaults to the value of aap_configuration_secure_logging if it is not explicitly called. This allows for secure logging to be toggled for the entire suite of automation hub configuration roles with a single variable, or for the user to selectively use it.
 
 |Variable Name|Default Value|Required|Description|
 |:---:|:---:|:---:|:---:|
-|`eda_configuration_credential_types_secure_logging`|`false`|no|Whether or not to include the sensitive Registry role tasks in the log.  Set this value to `true` if you will be providing your sensitive values from elsewhere.|
+|`eda_configuration_credential_types_secure_logging`|`true`|no|Whether or not to include the sensitive Registry role tasks in the log.  Set this value to `true` if you will be providing your sensitive values from elsewhere.|
 |`aap_configuration_secure_logging`|`false`|no|Whether or not to include the sensitive Registry role tasks in the log.  Set this value to `true` if you will be providing your sensitive values from elsewhere.|
 
 ### Asynchronous Retry Variables
