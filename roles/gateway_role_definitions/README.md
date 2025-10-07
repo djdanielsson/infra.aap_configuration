@@ -14,7 +14,7 @@ An Ansible Role to create/update/remove Role Definitions on Ansible gateway.
 |`aap_username`|""|no|Admin User on the Ansible Automation Platform Server. Either username / password or oauthtoken need to be specified.||
 |`aap_password`|""|no|Platform Admin User's password on the Server.  This should be stored in an Ansible Vault at vars/platform-secrets.yml or elsewhere and called from a parent playbook.||
 |`aap_token`|""|no|Controller Admin User's token on the Ansible Automation Platform Server. This should be stored in an Ansible Vault at or elsewhere and called from a parent playbook. Either username / password or oauthtoken need to be specified.||
-|`aap_request_timeout`|""|no|Specify the timeout in seconds Ansible should use in requests to the Ansible Automation Platform host.||
+|`aap_request_timeout`|`10`|no|Specify the timeout in seconds Ansible should use in requests to the Ansible Automation Platform host.||
 |`gateway_role_definitions`|`see below`|yes|Data structure describing your role definitions Described below.||
 
 ### Enforcing defaults
@@ -54,7 +54,7 @@ This also speeds up the overall role.
 
 |Variable Name|Default Value|Required|Description|
 |:---:|:---:|:---:|:---:|
-|`aap_configuration_async_retries`|30|no|This variable sets the number of retries to attempt for the role globally.|
+|`aap_configuration_async_retries`|50|no|This variable sets the number of retries to attempt for the role globally.|
 |`gateway_role_definitions_async_retries`|`aap_configuration_async_retries`|no|This variable sets the number of retries to attempt for the role.|
 |`aap_configuration_async_delay`|1|no|This sets the delay between retries for the role globally.|
 |`gateway_role_definitions_async_delay`|`aap_configuration_async_delay`|no|This sets the delay between retries for the role.|
