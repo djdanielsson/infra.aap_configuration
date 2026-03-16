@@ -15,6 +15,18 @@ This is an internal role that is not meant to be called directly by users of thi
 |`cas_register_subvar`||yes|The name of the dictionary key to use when registering values|
 |`aap_configuration_collect_logs`|`false`|no|When enabled collects error messages and continues execution. Messages are collected in a variable called `aap_configuration_role_errors`|
 
+### Error Output
+
+When a task fails, the error output includes:
+
+|Field|Description|
+|:---|:---|
+|`ERROR_MESSAGE`|The module error message (e.g. "Unable to update schedule server_report, see response")|
+|`ERROR_STATUS_CODE`|The HTTP status code from the API response (e.g. 400, 403, 404), if available|
+|`ERROR_RESPONSE`|The full JSON body from the API response (e.g. `{"detail": "Bad data found in related field execution_environment."}`), if available|
+
+When `aap_configuration_collect_logs` is `false` (default), the role fails immediately and displays the error message along with the API response detail. When `aap_configuration_collect_logs` is `true`, errors are collected into `aap_configuration_role_errors` with the above fields plus any identifying fields from the failed item (such as `name`, `organization`, etc.).
+
 ### Secure Logging Variables
 
 The following Variables complement each other.
