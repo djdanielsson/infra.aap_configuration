@@ -6,14 +6,68 @@ Ansible role that checks the status of asynchronous tasks and optionally collect
 
 This is an internal role that is not meant to be called directly by users of this collection.
 
+## Task Files
+
+The role provides composable task files. `main.yml` loops over a configurable list of task files to include, so callers can control exactly which steps run and avoid unnecessary output.
+
+### Available task files
+
+|Task File|Description|Self-guarded|
+|:---|:---|:---:|
+|`collect_async_status.yml`|Polls `async_status` until the async job completes. Registers the result in `__cas_job_async_result`. Uses `failed_when: false` so subsequent task files can inspect the result.|no|
+|`register_value.yml`|Registers the async result into a caller-specified variable. Only runs when `aap_configuration_register` or the item's `register` field is defined.|yes|
+|`handle_error.yml`|Handles failed async results. Only runs when `__cas_job_async_result` is failed. In fail-fast mode (default), fails immediately with the error message and API response detail. In log-collection mode (`aap_configuration_collect_logs: true`), collects errors into `aap_configuration_role_errors` and continues.|yes|
+
+### Controlling which task files run
+
+`main.yml` iterates over the `cas_task_files` list variable. The default is:
+
+```yaml
+cas_task_files:
+  - collect_async_status.yml
+  - handle_error.yml
+```
+
+Files are included in list order. Each file is self-guarded (has its own `when` conditions), so it is safe to include files that may not apply — they will skip cleanly.
+
+To customize, pass `cas_task_files` in the caller's `vars`:
+
+```yaml
+# Only poll, no error handling (caller handles errors itself)
+- ansible.builtin.include_role:
+    name: infra.aap_configuration.collect_async_status
+  vars:
+    cas_task_files:
+      - collect_async_status.yml
+
+# Poll + register + error handling
+- ansible.builtin.include_role:
+    name: infra.aap_configuration.collect_async_status
+  vars:
+    cas_task_files:
+      - collect_async_status.yml
+      - register_value.yml
+      - handle_error.yml
+```
+
+Individual files can also be included directly using `tasks_from`:
+
+```yaml
+- ansible.builtin.include_role:
+    name: infra.aap_configuration.collect_async_status
+    tasks_from: collect_async_status.yml
+```
+
 ## Variables
 
 |Variable Name|Default Value|Required|Description|
 |:---|:---:|:---:|:---|
 |`cas_job_async_results_item`||yes|The asynchronous item to check the status of. This must be from the registered `async` task|
+|`cas_task_files`|`[collect_async_status.yml, handle_error.yml]`|no|Ordered list of task files to include. Controls which steps run and their order.|
 |`cas_error_list_var_name`||yes|The name of the dictionary key to use when collecting errors|
 |`cas_register_subvar`||yes|The name of the dictionary key to use when registering values|
-|`aap_configuration_collect_logs`|`false`|no|When enabled collects error messages and continues execution. Messages are collected in a variable called `aap_configuration_role_errors`|
+|`cas_object_label`||no|Custom task label for the async_status polling task. When provided, replaces the default task name for better output readability.|
+|`cas_collect_logs`|`{{ aap_configuration_collect_logs \| default(false) }}`|no|When `true`, async task failures are suppressed (`failed_when: false`) so that `handle_error.yml` can collect error details and continue execution. Errors are collected in `aap_configuration_role_errors`. When `false` (default), the async task fails immediately on error.|
 
 ### Error Output
 

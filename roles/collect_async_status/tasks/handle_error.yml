@@ -1,8 +1,10 @@
 ---
 - name: handle_error | Handle Errors Block
+  when: __cas_job_async_result is defined and __cas_job_async_result is failed
+  no_log: "{{ cas_secure_logging }}"
   block:
     - name: handle_error | Show error and stop execution
-      when: not aap_configuration_collect_logs | default(false) | bool
+      when: not cas_collect_logs | bool
       vars:
         __cas_response: "{{ __cas_job_async_result['response'] | default({}) }}"
         __cas_response_detail: >-

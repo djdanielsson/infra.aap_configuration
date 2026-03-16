@@ -1,0 +1,11 @@
+---
+- name: "collect_async_status | {{ cas_object_label | default('collect_async_status | Wait for async job to complete') }}"
+  no_log: "{{ cas_secure_logging }}"
+  ansible.builtin.async_status:
+    jid: "{{ cas_job_async_results_item.ansible_job_id }}"
+  register: __cas_job_async_result
+  until: __cas_job_async_result.finished
+  retries: "{{ cas_async_retries }}"
+  delay: "{{ cas_async_delay }}"
+  failed_when: __cas_job_async_result is failed and not cas_collect_logs | bool
+...
