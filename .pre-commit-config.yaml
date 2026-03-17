@@ -38,17 +38,6 @@ repos:
     rev: v26.2.0
     hooks:
       - id: changelog
-
-  - repo: local
-    hooks:
       - id: galaxy-importer
-        name: Ansible Galaxy Importer
-        # First build the collection tarball, then pass it to the importer
-        entry: bash -c "ansible-galaxy collection build --force && python -m galaxy_importer.main *.tar.gz"
-        language: python
-        additional_dependencies:
-          ["galaxy-importer==0.4.37", "ansible-core==2.16.0"]
-        pass_filenames: false
-        files: ^(galaxy\.yml|docs/.*|roles/.*|plugins/.*|meta/.*|.*\.py|.*\.yml)$
 
 ...
