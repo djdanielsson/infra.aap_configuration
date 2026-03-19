@@ -57,7 +57,7 @@ Options for the `aap_user_accounts` variable:
 | Variable Name       |             Default Value             | Required | Type | Description                                                                                                                                                           |
 |:--------------------|:-------------------------------------:|:--------:|:----:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `username`          |                  N/A                  |   yes    | str  | The username of the user                                                                                                                                              |
-| `password`          | "{{ users_default_password }}" |    no    | str  | The password of the user                                                                                                                                              |
+| `password`          | "{{ users_default_password }}" |    no    | str  | The password of the user (see note below for more details)                                                                                                                   |
 | `email`             |                  N/A                  |   yes    | str  | The email of the user                                                                                                                                                 |
 | `first_name`        |                  ""                   |    no    | str  | The first name of the user                                                                                                                                            |
 | `last_name`         |                  ""                   |    no    | str  | The last name of the user                                                                                                                                             |
@@ -67,6 +67,8 @@ Options for the `aap_user_accounts` variable:
 | `state`             |               `present`               |    no    | str  | Desired state of the resource.                                                                                                                                        |
 | `update_secrets`    |                'true'                 |    no    | bool | true will always change password if user specifies password, even if API gives $encrypted$ for password. false will only set the password if other values change too. |
 |`register`                   |         ""          |   no     | str  | Variable to set based on the result of the object creation/modification                |
+
+**NOTE:** users_default_password is not defined so you need to set a password for each user or set a value for users_default_password to apply the same password to all users
 
 **Unique value:**
 
