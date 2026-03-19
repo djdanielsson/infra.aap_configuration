@@ -1,13 +1,16 @@
 ---
-- name: Include async status tasks
+- name: "{{ cas_object_label | default('collect_async_status | Wait for async job to complete') }}"
+  no_log: "{{ cas_secure_logging }}"
+  ansible.builtin.async_status:
+    jid: "{{ cas_job_async_results_item.ansible_job_id }}"
+  register: __cas_job_async_result
+  until: __cas_job_async_result.finished
+  retries: "{{ cas_async_retries }}"
+  delay: "{{ cas_async_delay }}"
+  failed_when: __cas_job_async_result is failed and not (cas_collect_logs | bool or cas_collect_errors | bool)
+
+- name: "Handle errors"
+  when: cas_collect_errors | bool and __cas_job_async_result is defined and __cas_job_async_result.status is defined and __cas_job_async_result.status == 'failed'
   ansible.builtin.include_tasks:
-    file: "{{ __cas_task_file }}"
-  loop: "{{ cas_task_files | default(__cas_default_task_files) }}"
-  loop_control:
-    loop_var: __cas_task_file
-    label: "{{ __cas_task_file }}"
-  vars:
-    __cas_default_task_files:
-      - collect_async_status.yml
-      - handle_error.yml
+    file: handle_error.yml
 ...

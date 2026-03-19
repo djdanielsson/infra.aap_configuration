@@ -1,10 +1,10 @@
 ---
 - name: handle_error | Handle Errors Block
-  when: __cas_job_async_result is defined and __cas_job_async_result is failed
-  no_log: "{{ cas_secure_logging }}"
+  when: __cas_job_async_result is defined and __cas_job_async_result.status is defined and __cas_job_async_result.status == 'failed'
   block:
     - name: handle_error | Show error and stop execution
-      when: not cas_collect_logs | bool
+      no_log: "{{ cas_secure_logging }}"
+      when: not (cas_collect_logs | bool or cas_collect_errors | bool)
       vars:
         __cas_response: "{{ __cas_job_async_result['response'] | default({}) }}"
         __cas_response_detail: >-
@@ -43,6 +43,7 @@
           }}
 
     - name: handle_error | Build consolidated list of failed objects and the error
+      no_log: "{{ cas_secure_logging }}"
       vars:
         __cas_response: "{{ __cas_job_async_result['response'] | default({}) }}"
         __new_error: >-

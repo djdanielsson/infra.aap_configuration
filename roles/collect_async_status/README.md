@@ -8,54 +8,29 @@ This is an internal role that is not meant to be called directly by users of thi
 
 ## Task Files
 
-The role provides composable task files. `main.yml` loops over a configurable list of task files to include, so callers can control exactly which steps run and avoid unnecessary output.
+|Task File|Description|
+|:---|:---|
+|`collect_async_status.yml`|Polls `async_status` until the async job completes. If `cas_collect_errors` is `true` and the result failed, automatically includes `handle_error.yml`.|
+|`handle_error.yml`|Handles failed async results. In fail-fast mode (default), fails immediately. In log-collection mode (`aap_configuration_collect_logs: true`), collects errors into `aap_configuration_role_errors` and continues.|
+|`register_value.yml`|Registers the async result into a caller-specified variable. Only runs when `aap_configuration_register` or the item's `register` field is defined.|
 
-### Available task files
+### Enabling error collection
 
-|Task File|Description|Self-guarded|
-|:---|:---|:---:|
-|`collect_async_status.yml`|Polls `async_status` until the async job completes. Registers the result in `__cas_job_async_result`. Uses `failed_when: false` so subsequent task files can inspect the result.|no|
-|`register_value.yml`|Registers the async result into a caller-specified variable. Only runs when `aap_configuration_register` or the item's `register` field is defined.|yes|
-|`handle_error.yml`|Handles failed async results. Only runs when `__cas_job_async_result` is failed. In fail-fast mode (default), fails immediately with the error message and API response detail. In log-collection mode (`aap_configuration_collect_logs: true`), collects errors into `aap_configuration_role_errors` and continues.|yes|
+Error handling via `handle_error.yml` is only included when `cas_collect_errors` is `true`. Each calling role passes its own `<prefix>_collect_errors` variable, which defaults to the global `aap_configuration_collect_errors`:
 
-### Controlling which task files run
+- **Per-role**: Set `<prefix>_collect_errors: true` (e.g. `controller_configuration_applications_collect_errors: true`)
+- **Global**: Set `aap_configuration_collect_errors: true` to enable error handling for all roles
 
-`main.yml` iterates over the `cas_task_files` list variable. The default is:
-
-```yaml
-cas_task_files:
-  - collect_async_status.yml
-  - handle_error.yml
-```
-
-Files are included in list order. Each file is self-guarded (has its own `when` conditions), so it is safe to include files that may not apply — they will skip cleanly.
-
-To customize, pass `cas_task_files` in the caller's `vars`:
+When `cas_collect_errors` is `false` (default), the `handle_error.yml` include is skipped entirely, keeping output clean.
 
 ```yaml
-# Only poll, no error handling (caller handles errors itself)
 - ansible.builtin.include_role:
     name: infra.aap_configuration.collect_async_status
+  loop: "{{ __job_async.results }}"
   vars:
-    cas_task_files:
-      - collect_async_status.yml
-
-# Poll + register + error handling
-- ansible.builtin.include_role:
-    name: infra.aap_configuration.collect_async_status
-  vars:
-    cas_task_files:
-      - collect_async_status.yml
-      - register_value.yml
-      - handle_error.yml
-```
-
-Individual files can also be included directly using `tasks_from`:
-
-```yaml
-- ansible.builtin.include_role:
-    name: infra.aap_configuration.collect_async_status
-    tasks_from: collect_async_status.yml
+    cas_collect_errors: "{{ controller_configuration_applications_collect_errors }}"
+    cas_job_async_results_item: "{{ __job_async_results_item }}"
+    # ... other vars ...
 ```
 
 ## Variables
@@ -63,11 +38,12 @@ Individual files can also be included directly using `tasks_from`:
 |Variable Name|Default Value|Required|Description|
 |:---|:---:|:---:|:---|
 |`cas_job_async_results_item`||yes|The asynchronous item to check the status of. This must be from the registered `async` task|
-|`cas_task_files`|`[collect_async_status.yml, handle_error.yml]`|no|Ordered list of task files to include. Controls which steps run and their order.|
+|`cas_collect_errors`|`{{ aap_configuration_collect_errors \| default(false) }}`|no|When `true` and the async result has failed, `collect_async_status.yml` automatically includes `handle_error.yml`. Each calling role passes its own `<prefix>_collect_errors` variable.|
 |`cas_error_list_var_name`||yes|The name of the dictionary key to use when collecting errors|
 |`cas_register_subvar`||yes|The name of the dictionary key to use when registering values|
 |`cas_object_label`||no|Custom task label for the async_status polling task. When provided, replaces the default task name for better output readability.|
 |`cas_collect_logs`|`{{ aap_configuration_collect_logs \| default(false) }}`|no|When `true`, async task failures are suppressed (`failed_when: false`) so that `handle_error.yml` can collect error details and continue execution. Errors are collected in `aap_configuration_role_errors`. When `false` (default), the async task fails immediately on error.|
+|`aap_configuration_collect_errors`|`false`|no|Global toggle to enable error collection for all roles. Each role's `<prefix>_collect_errors` defaults to this value.|
 
 ### Error Output
 
