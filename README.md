@@ -2,8 +2,9 @@
 
 [![pre-commit tests](https://github.com/redhat-cop/infra.aap_configuration/actions/workflows/pre-commit.yml/badge.svg)](https://github.com/redhat-cop/infra.aap_configuration/actions/workflows/pre-commit.yml)
 [![Release - Automated](https://github.com/redhat-cop/infra.aap_configuration/actions/workflows/release_auto.yml/badge.svg)](https://github.com/redhat-cop/infra.aap_configuration/actions/workflows/release_auto.yml)
-<!-- markdownlint-disable-line MD033 MD034 --><a href="https://raw.githubusercontent.com/redhat-cop/infra.aap_configuration/devel/docs/aap_config_as_code_public_meeting.ics"><img border="0" alt="Google Calendar invite" width="60" src="https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_20_2x.png"></a>
 <!-- Further CI badges go here as above -->
+
+[![Google Calendar invite](https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_20_2x.png)](https://raw.githubusercontent.com/redhat-cop/infra.aap_configuration/devel/docs/aap_config_as_code_public_meeting.ics)
 
 This Ansible collection allows for easy interaction with AAP 2.5+ via Ansible roles using the modules from the certified collections.
 
@@ -185,9 +186,9 @@ fatal: [localhost]: FAILED! => {
 
 ### Registering values
 
-As of version 4.0.0 of this collection, you can now collect information from the items which are created or modified by this collection. You can either add `register: <var>` to any item which is created to capture the outputs of that item, or set a value for `aap_configuration_register` which will capture all objects created. This fuinctionality may be particularly useful for capturing IDs of objects to enable performing further actions.
+As of version 4.0.0 of this collection, you can now collect information from the items which are created or modified by this collection. You can either add `register: <var>` to any item which is created to capture the outputs of that item, or set a value for `aap_configuration_register` which will capture all objects created. This functionality may be particularly useful for capturing IDs of objects to enable performing further actions.
 
-Below is an example for adding a register to a signle item:
+Below is an example for adding a register to a single item:
 
 ```yaml
 controller_templates:
@@ -198,7 +199,7 @@ controller_templates:
     register: register_var
 ```
 
-The resulting varaible from setting `aap_configuration_register` will be as follows:
+The resulting variable from setting `aap_configuration_register` will be as follows:
 
 ```json
 "aap_register_var": {
@@ -278,7 +279,7 @@ Adding the ability to use direct output from the awx export command in the roles
 We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against the [Controller Configuration collection repository](https://github.com/redhat-cop/aap_configuration).
 More information about contributing can be found in our [Contribution Guidelines.](https://github.com/redhat-cop/aap_configuration/blob/devel/.github/CONTRIBUTING.md)
 
-<!-- markdownlint-disable-line MD033 MD034 -->We have a community meeting every 4 weeks. Find the agenda in the [issues](https://github.com/redhat-cop/infra.aap_configuration/issues) and the calendar invitation here:<a target="_blank" href="https://raw.githubusercontent.com/redhat-cop/infra.aap_configuration/devel/docs/aap_config_as_code_public_meeting.ics"><img border="0" alt="Google Calendar invite" width="20" src="https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_20_2x.png"></a>
+We have a community meeting every 4 weeks. Find the agenda in the [issues](https://github.com/redhat-cop/infra.aap_configuration/issues) and the calendar invitation here: [![Google Calendar invite](https://ssl.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_20_2x.png)](https://raw.githubusercontent.com/redhat-cop/infra.aap_configuration/devel/docs/aap_config_as_code_public_meeting.ics)
 
 ## Code of Conduct
 
