@@ -16,3 +16,6 @@ tests/localtest.yml
 .devcontainer
 ansible_collections/
 importer_result.json
+*.egg-info/
+__pycache__/
+.pytest_cache/
