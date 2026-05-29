@@ -18,4 +18,4 @@ where = ["."]
 include = ["aap_config_validate*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["unit_tests"]

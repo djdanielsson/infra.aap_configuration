@@ -355,7 +355,7 @@ pytest
 pytest -v
 
 # Run a specific test module
-pytest tests/test_config.py -v
+pytest unit_tests/test_config.py -v
 ```
 
 ## Project Structure
@@ -381,7 +381,7 @@ tools/
 │       ├── eda.py                         # 8 Event-Driven Ansible schemas
 │       ├── gateway.py                     # 16 AAP Gateway schemas
 │       └── hub.py                         # 8 Automation Hub schemas
-└── tests/
+└── unit_tests/
     ├── test_cli.py                        # CLI integration tests
     ├── test_config.py                     # Config file tests
     ├── test_loader.py                     # YAML loader tests
