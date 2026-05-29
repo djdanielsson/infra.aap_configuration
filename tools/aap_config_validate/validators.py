@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import difflib
 import re
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set, Tuple
 
 from aap_config_validate.loader import is_jinja
 from aap_config_validate.models import (
@@ -19,6 +19,9 @@ from aap_config_validate.registry import (
     get_dispatch_var_names,
 )
 from aap_config_validate.schemas import get_all_schemas
+
+if TYPE_CHECKING:
+    from aap_config_validate.config import ValidatorConfig
 
 
 def _suggest_match(name: str, candidates: set[str], cutoff: float = 0.6) -> Optional[str]:
@@ -168,15 +171,19 @@ def merge_wildcard_vars(config: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Is
 # ── Public validation entry point ───────────────────────────────────
 
 
-def validate(config: Dict[str, Any], *, components: Optional[List[str]] = None) -> List[Issue]:
+def validate(config: Dict[str, Any], *, components: Optional[List[str]] = None, cfg: Optional[ValidatorConfig] = None) -> List[Issue]:
     issues: List[Issue] = []
     schemas = get_all_schemas()
     known_vars = get_all_known_vars()
 
+    if cfg and cfg.extra_known_vars:
+        known_vars = known_vars | set(cfg.extra_known_vars)
+
     if components:
         schemas = {k: v for k, v in schemas.items() if v.component in components}
 
-    issues.extend(_check_variable_names(config, known_vars, schemas))
+    if not (cfg and cfg.is_check_disabled("var_names")):
+        issues.extend(_check_variable_names(config, known_vars, schemas, cfg=cfg))
 
     for var_name, schema in schemas.items():
         if var_name not in config:
@@ -187,20 +194,27 @@ def validate(config: Dict[str, Any], *, components: Optional[List[str]] = None) 
                 continue
 
         value = config[var_name]
-        issues.extend(_check_structure(var_name, value, schema))
+        if not (cfg and cfg.is_check_disabled("structure")):
+            issues.extend(_check_structure(var_name, value, schema))
 
         if schema.is_list and isinstance(value, list):
             for idx, item in enumerate(value):
                 if not isinstance(item, dict):
                     continue
                 label = _item_label(schema, item, idx)
-                issues.extend(_check_required_fields(label, item, schema))
-                issues.extend(_check_field_types(label, item, schema))
-                issues.extend(_check_unknown_fields(label, item, schema))
-                issues.extend(_check_state_value(label, item, schema))
-                issues.extend(_check_choices(label, item, schema))
+                if not (cfg and cfg.is_check_disabled("required_fields")):
+                    issues.extend(_check_required_fields(label, item, schema))
+                if not (cfg and cfg.is_check_disabled("types")):
+                    issues.extend(_check_field_types(label, item, schema))
+                if not (cfg and cfg.is_check_disabled("unknown_fields")):
+                    issues.extend(_check_unknown_fields(label, item, schema, cfg=cfg))
+                if not (cfg and cfg.is_check_disabled("state")):
+                    issues.extend(_check_state_value(label, item, schema))
+                if not (cfg and cfg.is_check_disabled("choices")):
+                    issues.extend(_check_choices(label, item, schema))
 
-    issues.extend(_check_cross_references(config, schemas))
+    if not (cfg and cfg.is_check_disabled("xref")):
+        issues.extend(_check_cross_references(config, schemas))
     return issues
 
 
@@ -222,6 +236,8 @@ def _check_variable_names(
     config: Dict[str, Any],
     known_vars: Set[str],
     schemas: Dict[str, ResourceSchema],
+    *,
+    cfg: Optional[ValidatorConfig] = None,
 ) -> List[Issue]:
     issues: List[Issue] = []
     all_schema_aliases: Set[str] = set()
@@ -240,6 +256,8 @@ def _check_variable_names(
 
     for key in config:
         if key in known_vars or key in all_schema_aliases:
+            continue
+        if cfg and cfg.is_var_ignored(key):
             continue
         # Skip private/internal vars
         if key.startswith("_") or key.startswith("__"):
@@ -358,11 +376,13 @@ def _check_field_types(label: str, item: dict, schema: ResourceSchema) -> List[I
 # ── Unknown field validation ────────────────────────────────────────
 
 
-def _check_unknown_fields(label: str, item: dict, schema: ResourceSchema) -> List[Issue]:
+def _check_unknown_fields(label: str, item: dict, schema: ResourceSchema, *, cfg: Optional[ValidatorConfig] = None) -> List[Issue]:
     issues: List[Issue] = []
     known = _get_all_known_field_names(schema)
     for key in item:
         if key in known:
+            continue
+        if cfg and cfg.is_field_ignored(schema.var, key):
             continue
         suggestion = _suggest_match(key, known)
         issues.append(

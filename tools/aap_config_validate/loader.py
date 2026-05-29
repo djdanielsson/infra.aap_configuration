@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import yaml
+
+if TYPE_CHECKING:
+    from aap_config_validate.config import ValidatorConfig
 
 _JINJA_RE = re.compile(r"\{\{.*?\}\}|\{%.*?%\}")
 _LOOKUP_RE = re.compile(r"lookup\s*\(")
@@ -66,7 +69,7 @@ def load_yaml_file(path: Path) -> Dict[str, Any]:
     return data
 
 
-def load_config_dir(config_dir: str | Path) -> Tuple[Dict[str, Any], List[str]]:
+def load_config_dir(config_dir: str | Path, cfg: Optional[ValidatorConfig] = None) -> Tuple[Dict[str, Any], List[str]]:
     """Load all .yml files from *config_dir* into a merged namespace.
 
     Returns ``(merged_vars, parse_errors)``.
@@ -81,6 +84,12 @@ def load_config_dir(config_dir: str | Path) -> Tuple[Dict[str, Any], List[str]]:
         return merged, errors
 
     for path in yml_files:
+        if cfg:
+            rel = path.relative_to(config_dir)
+            if cfg.should_exclude_file(path) or cfg.should_exclude_file(rel):
+                continue
+            if any(cfg.should_exclude_dir(part) for part in rel.parent.parts):
+                continue
         try:
             data = load_yaml_file(path)
         except ValueError as exc:
@@ -95,15 +104,19 @@ def load_config_dir(config_dir: str | Path) -> Tuple[Dict[str, Any], List[str]]:
     return merged, errors
 
 
-def load_paths(paths: List[str]) -> Tuple[Dict[str, Any], List[str]]:
+def load_paths(paths: List[str], cfg: Optional[ValidatorConfig] = None) -> Tuple[Dict[str, Any], List[str]]:
     """Load config from one or more file/directory paths."""
     merged: Dict[str, Any] = {}
     errors: List[str] = []
     for p in paths:
         pp = Path(p)
         if pp.is_dir():
-            data, errs = load_config_dir(pp)
+            if cfg and cfg.should_exclude_dir(pp):
+                continue
+            data, errs = load_config_dir(pp, cfg)
         elif pp.is_file():
+            if cfg and cfg.should_exclude_file(pp):
+                continue
             try:
                 data = load_yaml_file(pp)
             except ValueError as exc:
