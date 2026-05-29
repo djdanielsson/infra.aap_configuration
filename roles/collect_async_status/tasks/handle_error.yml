@@ -49,7 +49,7 @@
         __new_error: >-
           {{ __cas_job_async_item
               | combine({
-                  'ERROR_MESSAGE': __cas_job_async_result['msg'] | default('UNKNOWN ERROR'),
+                  'ERROR_MESSAGE': __cas_job_async_result['msg'] | default(__cas_job_async_result['detail'] | default(__cas_job_async_result['error'] | default('UNKNOWN ERROR'))),
                   'ERROR_STATUS_CODE': __cas_response['status_code'] | default(omit),
                   'ERROR_RESPONSE': __cas_response['json'] | default(omit),
                 })
