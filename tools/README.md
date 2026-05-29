@@ -22,7 +22,7 @@ Offline configuration validator for the [infra.aap_configuration](https://github
 Schemas are provided for **53 resource types** across all four AAP components:
 
 | Component | Count | Examples |
-|---|---|---|
+| :--- | :--- | :--- |
 | **Controller** | 21 | `controller_templates`, `controller_projects`, `controller_credentials`, `controller_workflows`, `controller_inventories`, ... |
 | **Gateway** | 16 | `aap_organizations`, `aap_teams`, `aap_user_accounts`, `gateway_authenticators`, `gateway_settings`, ... |
 | **Hub** | 8 | `hub_namespaces`, `hub_collections`, `hub_ee_registries`, `hub_ee_repositories`, ... |
@@ -71,7 +71,7 @@ aap-config-validate --format json configs/
 
 ## CLI Reference
 
-```
+```text
 usage: aap-config-validate [-h] [--config FILE] [--format {text,json}]
                            [--strict]
                            [--component {controller,gateway,hub,eda}]
@@ -81,7 +81,7 @@ usage: aap-config-validate [-h] [--config FILE] [--format {text,json}]
 ```
 
 | Flag | Description |
-|---|---|
+| :--- | :--- |
 | `paths` | One or more YAML files or directories to validate (required) |
 | `--config FILE`, `-c FILE` | Path to a `.aap-validate.yml` config file (default: auto-detect from cwd) |
 | `--format {text,json}` | Output format (default: `text`) |
@@ -94,14 +94,14 @@ usage: aap-config-validate [-h] [--config FILE] [--format {text,json}]
 ### Exit Codes
 
 | Code | Meaning |
-|---|---|
+| :--- | :--- |
 | `0` | No errors (warnings may be present) |
 | `1` | One or more errors found |
 
 ## Issue Severity Levels
 
 | Level | Meaning | Example |
-|---|---|---|
+| :--- | :--- | :--- |
 | **ERROR** | Definite problem that will cause a failure | Missing required field, invalid state, malformed YAML |
 | **WARNING** | Likely problem worth investigating | Unknown variable name, typo in field name, broken cross-reference |
 | **INFO** | Informational, hidden by default | Jinja expression skipped, xref target not in config (may exist on server) |
@@ -110,7 +110,7 @@ usage: aap-config-validate [-h] [--config FILE] [--format {text,json}]
 
 ### Text (default)
 
-```
+```text
 ERROR: controller_credentials[0] ("My Cred"): missing required field "credential_type"
 WARNING: controller_templates[1] ("Deploy"): field "projet" not recognised (did you mean "project"?)
 
@@ -142,7 +142,7 @@ Found 1 error(s), 1 warning(s). Config is NOT valid.
 The `infra.aap_configuration` collection supports wildcard variables, where suffixed variables like `controller_templates_production` are merged into the base `controller_templates` list. The validator emulates this behavior:
 
 | Mode | Behavior |
-|---|---|
+| :--- | :--- |
 | `auto` (default) | Merges only when `dispatch_include_wildcard_vars: true` is set in your config |
 | `always` | Always merges wildcard-suffixed variables |
 | `never` | Never merges; suffixed variables are silently ignored |
@@ -245,7 +245,7 @@ components:                  # limit to specific component(s)
 
 CLI flags always take precedence over config file values, which take precedence over built-in defaults:
 
-```
+```text
 CLI flag  >  .aap-validate.yml  >  built-in default
 ```
 
@@ -254,7 +254,7 @@ CLI flag  >  .aap-validate.yml  >  built-in default
 Both suppress "unknown variable" warnings, but they work differently:
 
 | | `ignore_vars` | `extra_known_vars` |
-|---|---|---|
+| :--- | :--- | :--- |
 | Glob patterns | Yes (`env_*`) | No (exact names only) |
 | Purpose | Silently skip variables you don't want checked | Register variables as legitimately known |
 
@@ -360,7 +360,7 @@ pytest tests/test_config.py -v
 
 ## Project Structure
 
-```
+```text
 tools/
 ├── pyproject.toml                          # Package metadata and dependencies
 ├── .aap-validate.example.yml              # Annotated example config file

@@ -1,0 +1,9 @@
+minor_changes:
+  - >-
+    aap-config-validate - Added offline Python CLI under ``tools/`` to validate AAP
+    configuration YAML against infra.aap_configuration schemas before apply. Covers
+    Controller, Gateway, Hub, and EDA resources with variable-name, structure,
+    required-field, type, choice, state, and cross-reference checks; wildcard
+    variable merging; legacy alias support; and a ``.aap-validate.yml`` config file
+    for excluding paths and ignoring vars, fields, or checks.
+...
