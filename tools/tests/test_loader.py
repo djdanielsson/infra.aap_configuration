@@ -139,6 +139,7 @@ class TestLoadPaths:
         assert len(config["controller_projects"]) == 2
 
     def test_nonexistent_path(self):
-        _, errors = load_paths(["/nonexistent/path"])
+        config, errors = load_paths(["/nonexistent/path"])
+        assert config == {}
         assert len(errors) == 1
         assert "not found" in errors[0]
