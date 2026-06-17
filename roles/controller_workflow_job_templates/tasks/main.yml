@@ -125,7 +125,7 @@
     _item_list: "{{ workflow_job_templates if workflow_job_templates is defined else controller_workflows }}"
     _controller_roles: |
       {% for _item in _item_list %}
-      {% if _item.roles is defined %}
+      {% if _item.roles is defined and (_item.state | default(platform_state | default('present'))) != 'absent' %}
       {% for _role in _item.roles.keys() %}
       - role: "{{ _role }}"
         workflows:
